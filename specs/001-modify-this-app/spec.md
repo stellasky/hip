@@ -26,6 +26,15 @@
 
 ---
 
+## Clarifications
+
+### Session 2025-10-09
+- Q: For photo storage, what are the acceptable file size and storage limits per user? → A: Medium files: 10MB max per photo, 200MB total per user
+- Q: What performance target should the app meet for loading POI data and maps? → A: No specific targets: Load times can vary based on network conditions
+- Q: How should the system handle concurrent users editing the same POI (comments/photos)? → A: Last-write-wins: Most recent edit overwrites previous changes
+- Q: What authentication method should be used for user accounts? → A: AWS Cognito: Use existing AWS authentication service
+- Q: How many POIs per band should the system initially support? → A: Unlimited: No preset limits on POIs or bands
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### Primary User Story
@@ -58,14 +67,19 @@ A music fan opens the app to explore historically significant locations related 
 - **FR-008**: Users MUST be able to upload and attach photos to POIs
 - **FR-009**: System MUST persist user visit status, comments, and uploaded photos
 - **FR-010**: System MUST display user-generated content (comments and photos) on POI detail pages
-- **FR-011**: System MUST provide user authentication to associate visits, comments, and photos with specific users
-- **FR-012**: System MUST handle concurrent user interactions with POI data (multiple users commenting/uploading simultaneously)
+- **FR-011**: System MUST provide user authentication using AWS Cognito to associate visits, comments, and photos with specific users
+- **FR-012**: System MUST handle concurrent user interactions with POI data using last-write-wins strategy where most recent edit overwrites previous changes
 
 *Requirements needing clarification:*
-- **FR-013**: System MUST source band and POI data from [NEEDS CLARIFICATION: data source not specified - curated database, third-party API, user-generated content?]
-- **FR-014**: System MUST enforce content moderation policies for user comments and photos [NEEDS CLARIFICATION: moderation level not specified - automated, manual review, community-driven?]
-- **FR-015**: System MUST handle photo storage with [NEEDS CLARIFICATION: storage limits not specified - file size limits, total storage per user?]
-- **FR-016**: System MUST provide map functionality with [NEEDS CLARIFICATION: map provider not specified - integration requirements, offline capability?]
+- **FR-013**: System MUST source band and POI data from a json data : for initial implementation use a static data sourcec.
+- **FR-014**: System will not enforce content moderation at this time
+- **FR-015**: System MUST handle photo storage with maximum 10MB per photo file and 200MB total storage per user
+- **FR-016**: System MUST provide map functionality with aws mapping and offline capability
+
+### Non-Functional Requirements
+- **NFR-001**: System performance targets are flexible and may vary based on network conditions and device capabilities
+- **NFR-002**: Photo uploads are constrained by file size (10MB max) and user storage limits (200MB total)
+- **NFR-003**: System MUST support unlimited number of POIs per band and unlimited number of bands without preset limits
 
 ### Key Entities *(include if feature involves data)*
 - **Band**: Represents a musical group with name, description, and associated historical locations
