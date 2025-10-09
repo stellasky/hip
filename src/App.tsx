@@ -1,50 +1,27 @@
-import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
-import { useAuthenticator } from '@aws-amplify/ui-react';
-
-const client = generateClient<Schema>();
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { VisitedProvider } from './context/VisitedContext';
+import { BandsPage } from './pages/BandsPage';
+import { BandDetailPage } from './pages/BandDetailPage';
+import { POIDetailPage } from './pages/POIDetailPage';
 
 function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-
-  const { user,signOut } = useAuthenticator();
-
-  useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
-    });
-  }, []);
-
-    
-  function deleteTodo(id: string) {
-    client.models.Todo.delete({ id })
-  }
-
-  function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
-  }
-
+  const persistenceOn = ((import.meta as any)?.env?.VITE_USE_AMPLIFY_VISITS === 'true') || (typeof process !== 'undefined' && (process as any).env?.VITE_USE_AMPLIFY_VISITS === 'true');
   return (
-    <main>
-      <h1>{user?.signInDetails?.loginId}'s todos</h1>
-      <button onClick={signOut}>Sign out</button>
-      <button onClick={createTodo}>+ new</button>
-      <ul>
-        {todos.map((todo) => (
-          <li 
-          onClick={() => deleteTodo(todo.id)}
-          key={todo.id}>{todo.content}</li>
-        ))}
-      </ul>
-      <div>
-        🥳 App successfully hosted. Try creating a new todo.
-        <br />
-        <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
-          Review next step of this tutorial.
-        </a>
-      </div>
-    </main>
+    <VisitedProvider>
+      {persistenceOn && (
+        <div role="status" aria-label="env-banner" style={{ background: '#f0f9ff', color: '#0369a1', padding: '6px 10px', fontSize: '0.9rem' }}>
+          Amplify visit persistence: ON
+        </div>
+      )}
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<BandsPage />} />
+          <Route path="/band/:id" element={<BandDetailPage />} />
+          <Route path="/poi/:id" element={<POIDetailPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </VisitedProvider>
   );
 }
 

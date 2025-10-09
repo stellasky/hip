@@ -1,0 +1,42 @@
+[
+  {
+    "id": "abbey_road_studio",
+    "name": "Abbey Road Studios",
+    "address": "3 Abbey Rd, London NW8 9AY, UK",
+    "coordinates": { "latitude": 51.5321, "longitude": -0.1776 },
+    "description": "Recording location for many Beatles albums.",
+    "significance": "Historic recording studio tied to The Beatles.",
+    "bandIds": ["beatles"],
+    "category": "recording_studio"
+  },
+  {
+    "id": "cavern_club",
+    "name": "The Cavern Club",
+    "address": "10 Mathew St, Liverpool L2 6RE, UK",
+    "coordinates": { "latitude": 53.4066, "longitude": -2.9887 },
+    "description": "Venue where The Beatles played early gigs.",
+    "significance": "Key early venue for The Beatles.",
+    "bandIds": ["beatles"],
+    "category": "venue"
+  },
+  {
+    "id": "hyde_park",
+    "name": "Hyde Park",
+    "address": "Hyde Park, London, UK",
+    "coordinates": { "latitude": 51.5073, "longitude": -0.1657 },
+    "description": "Site of 1969 Rolling Stones concert.",
+    "significance": "Historic outdoor concert location.",
+    "bandIds": ["rolling_stones"],
+    "category": "landmark"
+  },
+  {
+    "id": "olympic_studios",
+    "name": "Olympic Studios",
+    "address": "117 Church Rd, London SW13 9HL, UK",
+    "coordinates": { "latitude": 51.4735, "longitude": -0.2484 },
+    "description": "Recording studio used by The Rolling Stones.",
+    "significance": "Major recording site for the Stones.",
+    "bandIds": ["rolling_stones"],
+    "category": "recording_studio"
+  }
+]

@@ -1,0 +1,20 @@
+[
+  {
+    "id": "beatles",
+    "name": "The Beatles",
+    "description": "Iconic English rock band formed in Liverpool in 1960.",
+    "genre": "Rock",
+    "formedYear": 1960,
+    "imageUrl": "",
+    "pois": ["abbey_road_studio", "cavern_club"]
+  },
+  {
+    "id": "rolling_stones",
+    "name": "The Rolling Stones",
+    "description": "English rock band formed in London in 1962.",
+    "genre": "Rock",
+    "formedYear": 1962,
+    "imageUrl": "",
+    "pois": ["hyde_park", "olympic_studios"]
+  }
+]

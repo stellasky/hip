@@ -31,3 +31,65 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
+
+## Developer
+
+Run the dev server:
+
+```bash
+npm run dev
+```
+
+Run the full test suite (Vitest):
+
+```bash
+npm test -- --run
+```
+
+Run a single test by name (example):
+
+```bash
+npm test -- -t "Visit tracking flow"
+```
+
+Testing notes:
+- Tests are written using Vitest and React Testing Library under a TDD workflow — write failing tests, implement behavior, then refactor.
+- Integration tests mock the `@aws-amplify/ui-react` `Authenticator` to keep tests deterministic and offline-friendly; API-level services are mocked via `aws-amplify/data` in `tests/setup.ts` to avoid network calls.
+- UI components use optimistic updates for faster UX in tests (and real usage). Integration tests assert the optimistic UI behaviors and basic LWW semantics where applicable.
+
+If you need to run tests against real cloud resources, configure Amplify in `src/main.tsx` with your `amplify_outputs.json` and adjust the tests to not use the mocked Authenticator.
+
+## Deploy
+
+Prereqs:
+- AWS account and credentials set up locally
+- Amplify Gen 2 CLI (AmpX) available via npx
+
+Steps:
+1. Provision a sandbox to validate infra and API locally tied to your account:
+	```bash
+	npx ampx sandbox
+	```
+2. When ready for production deploy:
+	```bash
+	npx ampx deploy
+	```
+3. For Amplify Hosting, connect the repo in the AWS Amplify console to enable CI/CD on pushes to your main branch.
+
+### Optional: Persist visits with Amplify
+
+You can persist visited POIs per signed-in user using the `Visit` model. Enable via Vite env flag and ensure Amplify Auth is configured and user is signed in:
+
+```bash
+export VITE_USE_AMPLIFY_VISITS=true
+npm run dev
+```
+
+When enabled, the app attempts to read/write visits using the generated Amplify Data client. Without the flag (default), visits are tracked in-memory for fast testing and offline use.
+
+### Optional: Run tests against real Amplify
+
+By default, tests mock Amplify Auth/UI and Data. If you want to run tests against a real backend:
+- Remove or conditionally bypass the `Authenticator` mock in `tests/integration/auth-flow.test.tsx`
+- Remove or guard the `aws-amplify/data` mock in `tests/setup.ts`
+- Ensure `amplify_outputs.json` is valid and Cognito user pools are configured

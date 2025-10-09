@@ -71,10 +71,10 @@ A music fan opens the app to explore historically significant locations related 
 - **FR-012**: System MUST handle concurrent user interactions with POI data using last-write-wins strategy where most recent edit overwrites previous changes
 
 *Requirements needing clarification:*
-- **FR-013**: System MUST source band and POI data from a json data : for initial implementation use a static data sourcec.
+- **FR-013**: System MUST source band and POI data from a json data :for initial implementation use a static data sourcec.
 - **FR-014**: System will not enforce content moderation at this time
 - **FR-015**: System MUST handle photo storage with maximum 10MB per photo file and 200MB total storage per user
-- **FR-016**: System MUST provide map functionality with aws mapping and offline capability
+- **FR-016**: System MUST provide map functionality with Amazon Location Service  and offline capability
 
 ### Non-Functional Requirements
 - **NFR-001**: System performance targets are flexible and may vary based on network conditions and device capabilities

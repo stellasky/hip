@@ -1,17 +1,53 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any user authenticated via an API key can "create", "read",
-"update", and "delete" any "Todo" records.
-=========================================================================*/
+// Data schema for Fan Appreciation App
+// Entities: User, Visit, Comment, Photo
+// Notes:
+// - Owner-based auth for mutations
+// - Public read for comments/photos (listings) while owners can write/delete
+// - Relations are minimal for now; can be expanded later with hasMany/belongsTo
+
 const schema = a.schema({
-  Todo: a
+  User: a
     .model({
-      content: a.string(),
+      cognitoId: a.string().required(),
+      email: a.string().required(),
+      username: a.string().required(),
+      storageUsed: a.integer().default(0),
     })
-    .authorization(allow => [allow.owner()]),
+    .authorization((allow) => [allow.owner()]),
+
+  Visit: a
+    .model({
+      userId: a.id().required(),
+      poiId: a.string().required(),
+      visited: a.boolean().required(),
+      visitDate: a.datetime(),
+      notes: a.string(),
+    })
+    .authorization((allow) => [allow.owner()]),
+
+  Comment: a
+    .model({
+      userId: a.id().required(),
+      poiId: a.string().required(),
+      content: a.string().required(),
+    })
+    .authorization((allow) => [allow.owner(), allow.publicApiKey().to(["read"])])
+    ,
+
+  Photo: a
+    .model({
+      userId: a.id().required(),
+      poiId: a.string().required(),
+      filename: a.string().required(),
+      s3Key: a.string().required(),
+      fileSize: a.integer().required(),
+      mimeType: a.string().required(),
+      caption: a.string(),
+    })
+    .authorization((allow) => [allow.owner(), allow.publicApiKey().to(["read"])])
+    ,
 });
 
 export type Schema = ClientSchema<typeof schema>;
