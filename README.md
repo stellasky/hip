@@ -1,6 +1,6 @@
 ## HIP - React 19 + AWS Amplify Gen 2 Application
 
-This repository provides a modern React 19 application built with AWS Amplify Gen 2, emphasizing type safety, performance, and developer experience through cutting-edge web technologies.
+This repository has a modern React 19 application built with AWS Amplify Gen 2, emphasizing type safety, performance, and developer experience through cutting-edge web technologies.
 
 ## Overview
 
