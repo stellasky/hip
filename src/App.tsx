@@ -27,6 +27,7 @@ function App() {
 
   return (
     <main>
+      <h1>Hip App</h1>
       <h1>{user?.signInDetails?.loginId}'s todos</h1>
       <button onClick={signOut}>Sign out</button>
       <button onClick={createTodo}>+ new</button>
