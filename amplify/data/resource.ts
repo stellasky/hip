@@ -16,6 +16,7 @@ const schema = a.schema({
       tripId: a.id().required(),
       trip: a.belongsTo("Trip", "tripId"),
       name: a.string().required(),
+      description: a.string().required(),
       address: a.string().required(),
       lat: a.float(),
       lng: a.float(),
