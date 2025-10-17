@@ -6,6 +6,8 @@ const schema = a.schema({
     .model({
       name: a.string().required(),
       // Optionally denormalized counters can be added later (e.g., placesCount)
+      places: a.hasMany("Place", "tripId"),
+      badges: a.hasMany("Badge", "tripId"),
     })
     .authorization((allow) => [allow.owner()]),
 
