@@ -14,14 +14,19 @@ const backend = defineBackend({
 // Custom stack for AWS Location Service (Place Index + Map)
 const locationStack = backend.createStack('location');
 
+// Derive unique names per Amplify env to avoid name collisions in the AWS account/region
+const stackName = Stack.of(locationStack).stackName;
+const indexName = `${stackName}-place-index`;
+const mapName = `${stackName}-vector-map`;
+
 const placeIndex = new CfnPlaceIndex(locationStack, 'HipPlaceIndex', {
   dataSource: 'Esri',
-  indexName: 'HipPlaceIndex',
+  indexName,
   dataSourceConfiguration: { intendedUse: 'SingleUse' },
 });
 
 const vectorMap = new CfnMap(locationStack, 'HipVectorMap', {
-  mapName: 'HipVectorMap',
+  mapName,
   configuration: { style: 'VectorEsriStreets' },
 });
 
@@ -33,8 +38,8 @@ const authRole: iam.IRole | undefined = (backend as any)?.resources?.auth?.authe
 if (authRole) {
   const region = Stack.of(locationStack).region;
   const account = Stack.of(locationStack).account;
-  const placeIndexArn = `arn:aws:geo:${region}:${account}:place-index/${placeIndex.indexName}`;
-  const mapArn = `arn:aws:geo:${region}:${account}:map/${vectorMap.mapName}`;
+  const placeIndexArn = `arn:aws:geo:${region}:${account}:place-index/${indexName}`;
+  const mapArn = `arn:aws:geo:${region}:${account}:map/${mapName}`;
 
   authRole.addToPrincipalPolicy(
     new iam.PolicyStatement({
