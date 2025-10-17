@@ -4,6 +4,7 @@ import { fetchAuthSession } from "aws-amplify/auth";
 
 // Expect AWS credentials via Amplify Auth (federated through Cognito Identity Pool).
 // The Location client will pick up default credentials from the environment when running in the browser via Amplify.
+// Place Index default name will be derived in backend as `${stackName}-place-index` if not provided via outputs.
 
 const REGION = outputs?.auth?.aws_region ?? "us-east-1";
 

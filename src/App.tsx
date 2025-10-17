@@ -14,6 +14,7 @@ function App() {
   const [selectedTripId, setSelectedTripId] = useState<string | undefined>();
   const [addressInput, setAddressInput] = useState("");
   const [places, setPlaces] = useState<Array<Schema["Place"]["type"]>>([]);
+  // Prefer outputs.location.place_index_name; fallback matches backend naming `${stackName}-place-index` if needed
   const placeIndexName = useMemo(() => (outputs as any)?.location?.place_index_name ?? "HipPlaceIndex", []);
   const [runtimeWarning, setRuntimeWarning] = useState<string | undefined>();
 
