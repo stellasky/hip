@@ -48,6 +48,7 @@ export const data = defineData({
 });
 
 /*
+Adding to commment
 Client usage example:
 "use client"
 import { generateClient } from "aws-amplify/data";
