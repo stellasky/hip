@@ -15,10 +15,18 @@ function App() {
   const [addressInput, setAddressInput] = useState("");
   const [places, setPlaces] = useState<Array<Schema["Place"]["type"]>>([]);
   const placeIndexName = useMemo(() => (outputs as any)?.location?.place_index_name ?? "HipPlaceIndex", []);
+  const [runtimeWarning, setRuntimeWarning] = useState<string | undefined>();
 
   useEffect(() => {
-    const sub = client.models.Trip.observeQuery().subscribe({
-      next: (data) => setTrips([...data.items]),
+    const tripModel = (client as any)?.models?.Trip;
+    if (!tripModel?.observeQuery) {
+      setRuntimeWarning(
+        "Backend models are not in sync (Trip missing). Deploy the backend so amplify_outputs.json includes Trip/Place/Badge, then reload."
+      );
+      return;
+    }
+    const sub = tripModel.observeQuery().subscribe({
+      next: (data: any) => setTrips([...(data.items ?? [])]),
     });
     return () => sub.unsubscribe();
   }, []);
@@ -28,23 +36,34 @@ function App() {
       setPlaces([]);
       return;
     }
-    const sub = client.models.Place.observeQuery({
-      filter: { tripId: { eq: selectedTripId } },
-    }).subscribe({
-      next: (data) => setPlaces([...data.items]),
-    });
+    const placeModel = (client as any)?.models?.Place;
+    if (!placeModel?.observeQuery) {
+      setRuntimeWarning(
+        "Backend models are not in sync (Place missing). Deploy the backend so amplify_outputs.json includes Trip/Place/Badge, then reload."
+      );
+      return;
+    }
+    const sub = placeModel
+      .observeQuery({ filter: { tripId: { eq: selectedTripId } } })
+      .subscribe({
+        next: (data: any) => setPlaces([...(data.items ?? [])]),
+      });
     return () => sub.unsubscribe();
   }, [selectedTripId]);
 
     
   function deleteTrip(id: string) {
-    client.models.Trip.delete({ id })
+    const tripModel = (client as any)?.models?.Trip;
+    if (!tripModel?.delete) return;
+    tripModel.delete({ id });
   }
 
   function createTrip() {
     const name = window.prompt("Trip name");
     if (!name) return;
-    client.models.Trip.create({ name });
+    const tripModel = (client as any)?.models?.Trip;
+    if (!tripModel?.create) return;
+    tripModel.create({ name });
   }
 
   async function addPlace() {
@@ -52,7 +71,9 @@ function App() {
     if (!addressInput) return;
     if (!placeIndexName) return alert("Place Index not configured yet");
     const geo = await geocodeText(placeIndexName, addressInput);
-    await client.models.Place.create({
+    const placeModel = (client as any)?.models?.Place;
+    if (!placeModel?.create) return;
+    await placeModel.create({
       tripId: selectedTripId,
       name: geo?.label ?? addressInput,
       address: addressInput,
@@ -64,7 +85,9 @@ function App() {
   }
 
   function toggleVisited(place: Schema["Place"]["type"]) {
-    client.models.Place.update({ id: place.id, visited: !place.visited });
+    const placeModel = (client as any)?.models?.Place;
+    if (!placeModel?.update) return;
+    placeModel.update({ id: place.id, visited: !place.visited });
   }
 
   return (
@@ -73,6 +96,11 @@ function App() {
       <h1>{user?.signInDetails?.loginId}'s trips</h1>
       <button onClick={signOut}>Sign out</button>
       <button onClick={createTrip}>+ new</button>
+      {runtimeWarning && (
+        <p style={{ color: 'orangered' }}>
+          {runtimeWarning}
+        </p>
+      )}
       <ul>
         {trips.map((trip) => (
           <li key={trip.id}>
