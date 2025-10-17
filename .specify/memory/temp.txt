@@ -1,0 +1,116 @@
+Trip Planner Mobile Web App — Product Requirements
+
+1. Overview
+This mobile-first web application enables authenticated users to create and complete “trips,” where a trip is a collection of places derived from user-provided addresses. Users select a trip, see its places on a list and a map, mark places as visited, and receive a completion badge when all places in the trip are visited. The experience prioritizes simplicity, clarity, and performance on mobile devices.
+
+2. Objectives & Success Metrics
+- SC-001: 80% of users can create their first trip (≥1 place) within 3 minutes of first login.
+- SC-002: 70% of users who create a trip visit at least one place within 7 days.
+- SC-003: 50% of trips created reach completion (all places visited) within 30 days.
+- SC-004: Mobile P75 time-to-interactive < 2.0s on a typical 4G connection for Trips and Trip Details pages.
+
+3. Scope
+In Scope
+- User authentication and session management (login/logout).
+- Trips list, trip creation by adding addresses, and trip deletion.
+- Trip details view with a map and a list of places.
+- Place details view with ability to mark a place as visited/unvisited.
+- Badge award when all places in a trip are visited.
+
+Out of Scope (v1)
+- Social sharing, collaborative trips, or multi-user editing.
+- Advanced routing/turn-by-turn navigation.
+- Offline-first sync and conflict resolution.
+
+4. Personas & Assumptions
+- Primary Persona: Casual traveler planning local or short trips; values simple visual progress.
+- Assumptions: Users are on modern mobile browsers; places are derived from user-entered addresses via geocoding; a base map provider is available.
+
+5. User Stories (with Acceptance Criteria)
+- US1 Login: As a user, I can log in to access my trips.
+	- AC1: Given I am logged out, when I enter valid credentials, then I am taken to the Trips page.
+	- AC2: Given I am logged in, when I refresh, then I remain authenticated and see the Trips page.
+
+- US2 View Trips: As a user, I can view a list of my trips sorted by last updated.
+	- AC1: Trips list shows name, place count, and completion progress (% visited).
+	- AC2: Empty state is shown when I have no trips, with a clear CTA to create a trip.
+
+- US3 Create Trip: As a user, I can create a trip by adding addresses that become places.
+	- AC1: I can enter a trip name and one or more addresses.
+	- AC2: Addresses are validated/geocoded; invalid entries show an actionable error.
+	- AC3: Upon save, the trip appears in my trips list with derived places.
+
+- US4 Trip Details + Map: As a user, I can open a trip to see its places on a map and in a list.
+	- AC1: Map shows markers for all places in the trip; the list shows the same places.
+	- AC2: Tapping a marker highlights the corresponding list item (and vice versa).
+	- AC3: Visited places are visually distinct from unvisited (e.g., checkmark state or color).
+
+- US5 Place Details: As a user, I can open a place to see its details and mark it visited.
+	- AC1: Place details include name/address and visited state.
+	- AC2: I can toggle visited state from this view; the trip’s progress updates accordingly.
+
+- US6 Earn Badge: As a user, I receive a badge when all places in a trip are visited.
+	- AC1: When the last unvisited place is marked visited, I see a completion badge for that trip.
+	- AC2: The badge persists and is visible on the Trips list and Trip Details pages.
+
+6. Functional Requirements (FR)
+- FR-001 Authentication: The system MUST authenticate users before accessing trips.
+- FR-002 Trips CRUD: The system MUST allow create/read/delete of trips per authenticated user.
+- FR-003 Address Entry: The system MUST accept user-entered addresses when creating a trip.
+- FR-004 Geocoding: The system MUST geocode addresses to coordinates and create place records.
+- FR-005 Trip View: The system MUST display a list of trips with progress (visited/total places).
+- FR-006 Trip Details: The system MUST display a map of places and a synchronized list.
+- FR-007 Place Details: The system MUST display place name/address and visited state.
+- FR-008 Visited Toggle: The system MUST allow marking a place as visited/unvisited and update progress.
+- FR-009 Completion Logic: The system MUST award a trip badge when all places are visited.
+- FR-010 Data Ownership: Users MUST only access their own trips and places.
+
+7. Non-Functional Requirements (NFR)
+- NFR-001 Performance: P75 TTI < 2.0s on Trips and Trip Details pages on typical 4G mobile.
+- NFR-002 Availability: The service SHOULD maintain 99.9% monthly uptime for core read operations.
+- NFR-003 Usability: Primary actions (create trip, mark visited) discoverable within 1 tap from main screens.
+- NFR-004 Security: All authenticated routes MUST be protected; no client-stored secrets.
+- NFR-005 Accessibility: Contrast/labels meet WCAG AA; all interactive elements keyboard/focus accessible.
+
+8. Data Model (Conceptual)
+- User: id, email, name, createdAt
+- Trip: id, userId (owner), name, createdAt, updatedAt
+- Place: id, tripId, name, address, lat, lng, visited (bool), description, visitedAt?
+- Badge: id, tripId, type (completion), awardedAt
+Notes: Trip progress = count(visited places) / count(places). Badge awarded when progress reaches 100%.
+
+9. Navigation & Flows
+- Login → Trips → Trip Details (map + list) → Place Details
+- From Trips: Create Trip flow: open dialog/form → enter name + addresses → validate/geocode → save → return to Trips.
+- From Trip Details: Select place from map/list → Place Details → toggle visited → return updates map/list.
+
+10. Edge Cases
+- Invalid address: Show error and let user edit/remove; do not create place until valid.
+- No places in trip: Trip Details shows an empty state with guidance to add places.
+- Duplicate addresses: Warn user and allow deduplication or proceed with separate pins.
+- Partial geocoding failure: Create trip with valid places; list failed ones for retry/edit.
+- All places already visited: Badge state remains visible; unmarking a place removes the badge until re-completed.
+
+11. Dependencies
+- Geocoding provider (to convert addresses to coordinates).
+- Map provider (to render places as markers).
+
+12. Risks & Mitigations
+- Geocoding accuracy: Provide edit tools and manual pin adjustments (future improvement); validate with preview.
+- Rate limits/costs: Batch geocoding requests, backoff/retry, and cap addresses per trip in v1.
+- Mobile performance: Lazy-load map, defer heavy scripts, cache data, and reuse markers.
+
+13. Milestones (MVP-first)
+- M1 (Auth + Trips): Login, Trips list, empty state. (US1, US2)
+- M2 (Create Trip): Trip creation by addresses with basic geocoding + Trip persistence. (US3)
+- M3 (Trip Details): Map + synchronized list; Place details. (US4, US5)
+- M4 (Progress & Badges): Visited toggle, progress calc, badge award/persistence. (US6)
+
+14. Reporting & Metrics
+- Track: trip_created, place_geocoded, place_marked_visited, trip_completed_badge_awarded.
+- Export weekly: conversion from trip_created → trip_completed.
+
+15. Open Questions
+- Should addresses support bulk paste upload (CSV) in v1?
+- Maximum places per trip for performance/UX (e.g., 50)?
+- Should visited state auto-detect via location proximity in future versions?
