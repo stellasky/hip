@@ -10,11 +10,11 @@ Note: Technology-agnostic shapes. Fields are minimal for MVP; IDs are opaque str
 ## Trips
 - List trips
 	- Request: {}
-	- Response: { items: Trip[] }
+	- Response: { items: Trip[] } (Trip.visitedCount computed over geocoded places)
 
 - Create trip
-	- Request: { name: string, addresses: string[] }
-	- Response: { trip: Trip, places: Place[] }
+	- Request: { name: string }
+	- Response: { trip: Trip }
 
 - Delete trip
 	- Request: { id: string }
@@ -24,6 +24,10 @@ Note: Technology-agnostic shapes. Fields are minimal for MVP; IDs are opaque str
 - Get trip
 	- Request: { id: string }
 	- Response: { trip: Trip, places: Place[] }
+
+- Add place (incremental address add)
+	- Request: { tripId: string, address: string }
+	- Response: { place: Place, duplicateMerged?: boolean }
 
 ## Places
 - Get place

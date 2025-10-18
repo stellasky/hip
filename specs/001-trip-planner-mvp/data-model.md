@@ -41,5 +41,6 @@ Date: 2025-10-16
 - visited: default false
 
 ## Derived State
-- Trip.progress = visitedPlaces / totalPlaces
+- Trip.progress = visitedGeocodedPlaces / totalGeocodedPlaces (exclude un‑geocoded)
+	- Duplicates: identical or geocoding-equivalent addresses merge into a single place when accepted by user (default merge).
 <!-- Badge awarding removed from MVP -->
