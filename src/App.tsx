@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useMemo, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
@@ -13,6 +14,9 @@ function App() {
   const [selectedTripId, setSelectedTripId] = useState<string | undefined>();
   const [addressInput, setAddressInput] = useState("");
   const [places, setPlaces] = useState<Array<Schema["Place"]["type"]>>([]);
+  const [allPlaces, setAllPlaces] = useState<Array<Schema["Place"]["type"]>>([]);
+  // Add trip summaries with progress
+  const [tripSummaries, setTripSummaries] = useState<Array<{id: string, name: string, placesCount: number, visitedCount: number}>>([]);
   // Prefer outputs.location.place_index_name; fallback matches backend naming `${stackName}-place-index` if needed
   const placeIndexName = useMemo(() => (outputs as any)?.location?.place_index_name ?? "HipPlaceIndex", []);
   const [runtimeWarning, setRuntimeWarning] = useState<string | undefined>();
@@ -27,7 +31,17 @@ function App() {
       return;
     }
     const sub = tripModel.observeQuery().subscribe({
-      next: (data: any) => setTrips([...(data.items ?? [])]),
+      next: (data: any) => setTrips([...(data.items ?? [])].sort((a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime())),
+    });
+    return () => sub.unsubscribe();
+  }, []);
+
+  // Observe all places for summaries
+  useEffect(() => {
+    const placeModel = (client as any)?.models?.Place;
+    if (!placeModel?.observeQuery) return;
+    const sub = placeModel.observeQuery().subscribe({
+      next: (data: any) => setAllPlaces([...(data.items ?? [])]),
     });
     return () => sub.unsubscribe();
   }, []);
@@ -102,17 +116,22 @@ function App() {
           {runtimeWarning}
         </p>
       )}
-      <ul>
-        {trips.map((trip) => (
-          <li key={trip.id}>
-            <button onClick={() => setSelectedTripId(trip.id)}>
-              {selectedTripId === trip.id ? "▶" : ""}
-            </button>
-            <span style={{ marginInline: 8 }}>{trip.name}</span>
-            <button onClick={() => deleteTrip(trip.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      {tripSummaries.length === 0 ? (
+        <p>No trips yet. <button onClick={createTrip}>Create your first trip</button></p>
+      ) : (
+        <ul>
+          {tripSummaries.map((trip) => (
+            <li key={trip.id}>
+              <button onClick={() => setSelectedTripId(trip.id)}>
+                {selectedTripId === trip.id ? "▶" : ""}
+              </button>
+              <span style={{ marginInline: 8 }}>{trip.name}</span>
+              <span>({trip.visitedCount}/{trip.placesCount})</span>
+              <button onClick={() => deleteTrip(trip.id)}>Delete</button>
+            </li>
+          ))}
+        </ul>
+      )}
       {selectedTripId && (
         <>
           <section>
