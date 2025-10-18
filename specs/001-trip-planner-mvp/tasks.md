@@ -18,24 +18,24 @@ description: "Task list for Trip Planner MVP"
 
 ## Phase 1: Setup (Shared Infrastructure)
 
-- [ ] T001 Ensure Amplify outputs wired (`src/main.tsx`) and Authenticator wraps app
-- [ ] T002 [P] Create top-level test directories: `tests/unit/`, `tests/integration/`
-- [ ] T003 [P] Establish testing presets and basic runners (documented; minimal scaffolding)
-- [ ] T004 Constitution Check: confirm lint/types/build gates are green
-- [ ] T004a [P] Build verification: `npm run build` produces `dist/` with no `tsc` errors and ESLint warnings (document CI gate)
+- [X] T001 Ensure Amplify outputs wired (`src/main.tsx`) and Authenticator wraps app
+- [X] T002 [P] Create top-level test directories: `tests/unit/`, `tests/integration/`
+- [X] T003 [P] Establish testing presets and basic runners (documented; minimal scaffolding)
+- [X] T004 Constitution Check: confirm lint/types/build gates are green
+- [X] T004a [P] Build verification: `npm run build` produces `dist/` with no `tsc` errors and ESLint warnings (document CI gate)
 
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-- [ ] T010 Define Data models: Trip, Place, Badge in `amplify/data/resource.ts` (owner auth rules)
-- [ ] T011 [P] Generate Amplify Data client types in frontend and validate imports
-- [ ] T012 Add AWS Location Service resources via backend-as-code (maps/places) in `amplify/` (naming, permissions)
-- [ ] T013 [P] Client utility: lazy-load map SDK and thin wrapper for map rendering
-- [ ] T014 [P] Add geocoding utility calling AWS Location (with error handling and rate limiting notes)
-- [ ] T015 Update README quickstart section with feature flows (link quickstart.md)
+- [X] T010 Define Data models: Trip, Place, Badge in `amplify/data/resource.ts` (owner auth rules)
+- [X] T011 [P] Generate Amplify Data client types in frontend and validate imports
+- [X] T012 Add AWS Location Service resources via backend-as-code (maps/places) in `amplify/`
+- [X] T013 [P] Client utility: lazy-load map SDK and thin wrapper for map rendering
+- [X] T014 [P] Add geocoding utility calling AWS Location (with error handling and rate limiting notes)
+- [X] T015 Update README quickstart section with feature flows (link quickstart.md)
 - [ ] T016 [P] Integration check: data ownership enforcement — cross-user read/write must be denied
-- [ ] T017 Add PR migration note requirement template for schema/auth/Location resource changes
+- [X] T017 Add PR migration note requirement template for schema/auth/Location resource changes
 
 **Checkpoint**: Foundation ready - user stories can begin
 
@@ -51,11 +51,11 @@ description: "Task list for Trip Planner MVP"
 
 ## Phase 4: User Story 2 - View Trips (P1)
 
-- [ ] T030 [US2] Trips page: list user trips with name, place count, progress
-- [ ] T031 [US2] Sort trips by last updated
-- [ ] T032 [US2] Empty state with CTA to create trip
+- [X] T030 [US2] Trips page: list user trips with name, place count, progress
+- [X] T031 [US2] Sort trips by last updated
+- [X] T032 [US2] Empty state with CTA to create trip
 - [ ] T033 [P] [US2] Integration check: seed 2 trips → order and progress render correctly
-- [ ] T034 [US2] Trip deletion: allow user to delete a trip and confirm list updates
+- [X] T034 [US2] Trip deletion: allow user to delete a trip and confirm list updates
 - [ ] T035 [P] [US2] Integration check: delete a trip → removed from list and progress recalculated
 
 ---

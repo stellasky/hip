@@ -19,12 +19,14 @@ const stackName = Stack.of(locationStack).stackName;
 const indexName = `${stackName}-place-index`;
 const mapName = `${stackName}-vector-map`;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const placeIndex = new CfnPlaceIndex(locationStack, 'HipPlaceIndex', {
   dataSource: 'Esri',
   indexName,
   dataSourceConfiguration: { intendedUse: 'SingleUse' },
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const vectorMap = new CfnMap(locationStack, 'HipVectorMap', {
   mapName,
   configuration: { style: 'VectorEsriStreets' },
@@ -33,6 +35,7 @@ const vectorMap = new CfnMap(locationStack, 'HipVectorMap', {
 // Attach IAM permissions for authenticated users to use the Place Index (and map, when needed)
 // Best practice per constitution: gate Location usage behind authenticated users
 // Attempt to access the authenticated role from the realized auth resource
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const authRole: iam.IRole | undefined = (backend as any)?.resources?.auth?.authenticatedUserIamRole;
 
 if (authRole) {
