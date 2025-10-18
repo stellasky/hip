@@ -16,8 +16,9 @@ const locationStack = backend.createStack('location');
 
 // Derive unique names per Amplify env to avoid name collisions in the AWS account/region
 const stackName = Stack.of(locationStack).stackName;
-const indexName = `${stackName}-place-index`;
-const mapName = `${stackName}-vector-map`;
+const indexName = `${stackName}-index`.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 100);
+// Sanitize and shorten mapName for AWS Location
+const mapName = `${stackName}-map`.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 50);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const placeIndex = new CfnPlaceIndex(locationStack, 'HipPlaceIndex', {

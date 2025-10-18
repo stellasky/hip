@@ -10,7 +10,6 @@ const client = generateClient<Schema>();
 
 function App() {
   const [trips, setTrips] = useState<Array<Schema["Trip"]["type"]>>([]);
-
   const { user,signOut } = useAuthenticator();
   const [selectedTripId, setSelectedTripId] = useState<string | undefined>();
   const [addressInput, setAddressInput] = useState("");
@@ -22,11 +21,12 @@ function App() {
   const placeIndexName = useMemo(() => (outputs as any)?.location?.place_index_name ?? "HipPlaceIndex", []);
   const [runtimeWarning, setRuntimeWarning] = useState<string | undefined>();
 
+
   useEffect(() => {
     const tripModel = (client as any)?.models?.Trip;
     if (!tripModel?.observeQuery) {
       setRuntimeWarning(
-        "Backend models are not in sync (Trip missing). Deploy the backend so amplify_outputs.json includes Trip/Place/Badge, then reload."
+        "Backend models are not in sync (Trip missing). Deploy the backend so amplify_outputs.json includes Trip/Place, then reload."
       );
       return;
     }
@@ -51,19 +51,20 @@ function App() {
       setPlaces([]);
       return;
     }
-    setPlaces(allPlaces.filter(p => p.tripId === selectedTripId));
-  }, [selectedTripId, allPlaces]);
-
-  // Compute trip summaries
-  useEffect(() => {
-    const summaries = trips.map(trip => {
-      const tripPlaces = allPlaces.filter(p => p.tripId === trip.id);
-      const placesCount = tripPlaces.length;
-      const visitedCount = tripPlaces.filter(p => p.visited).length;
-      return { id: trip.id, name: trip.name, placesCount, visitedCount };
-    });
-    setTripSummaries(summaries);
-  }, [trips, allPlaces]);
+    const placeModel = (client as any)?.models?.Place;
+    if (!placeModel?.observeQuery) {
+      setRuntimeWarning(
+        "Backend models are not in sync (Place missing). Deploy the backend so amplify_outputs.json includes Trip/Place, then reload."
+      );
+      return;
+    }
+    const sub = placeModel
+      .observeQuery({ filter: { tripId: { eq: selectedTripId } } })
+      .subscribe({
+        next: (data: any) => setPlaces([...(data.items ?? [])]),
+      });
+    return () => sub.unsubscribe();
+  }, [selectedTripId]);
 
     
   function deleteTrip(id: string) {
@@ -132,28 +133,31 @@ function App() {
         </ul>
       )}
       {selectedTripId && (
-        <section>
-          <h2>Places</h2>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <input
-              type="text"
-              placeholder="Enter address"
-              value={addressInput}
-              onChange={(e) => setAddressInput(e.target.value)}
-            />
-            <button onClick={addPlace}>Add</button>
-          </div>
-          <ul>
-            {places.map((p) => (
-              <li key={p.id}>
-                <label>
-                  <input type="checkbox" checked={!!p.visited} onChange={() => toggleVisited(p)} />
-                  {p.name} — {p.address}
-                </label>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <>
+          <section>
+            <h2>Places</h2>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input
+                type="text"
+                placeholder="Enter address"
+                value={addressInput}
+                onChange={(e) => setAddressInput(e.target.value)}
+              />
+              <button onClick={addPlace}>Add</button>
+            </div>
+            <ul>
+              {places.map((p) => (
+                <li key={p.id}>
+                  <label>
+                    <input type="checkbox" checked={!!p.visited} onChange={() => toggleVisited(p)} />
+                    {p.name} — {p.address}
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </section>
+          
+        </>
       )}
       <div>
         🥳 App successfully hosted. Try creating a new trip.

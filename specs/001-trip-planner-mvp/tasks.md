@@ -89,11 +89,7 @@ description: "Task list for Trip Planner MVP"
 
 ---
 
-## Phase 8: User Story 6 - Completion Badge (P3)
-
-- [ ] T070 [US6] Compute trip completion and award badge when all places visited
-- [ ] T071 [US6] Show badge on Trips and Trip Details
-- [ ] T072 [P] [US6] Integration check: last place visited → badge appears and persists
+<!-- Phase 8 (Badge) removed from MVP scope -->
 
 ---
 
@@ -103,7 +99,7 @@ description: "Task list for Trip Planner MVP"
 - [ ] T081 [P] Accessibility: labels/contrast for map controls and lists (WCAG AA)
 - [ ] T082 [P] Error handling: geocoding and data failures show actionable messages
 - [ ] T083 Documentation: update quickstart.md and README with any changes
-- [ ] T084 [P] Analytics instrumentation: log `trip_created`, `place_geocoded`, `place_marked_visited`, `trip_completed_badge_awarded`
+- [ ] T084 [P] Analytics instrumentation: log `trip_created`, `place_geocoded`, `place_marked_visited`
 - [ ] T085 [P] Performance measurement: run Lighthouse Mobile 5x, record P75 TTI for Trips and Trip Details (doc methodology)
 - [ ] T086 [P] Contracts detail: update `contracts/openapi.md` with minimal fields/response shapes per action
 

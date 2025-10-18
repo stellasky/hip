@@ -32,7 +32,7 @@ pipelines.
 <!-- Example: II. CLI Interface -->
 All AWS resources MUST be declared as code:
 - Auth via `defineAuth` (Cognito User Pools) with email login.
-- Data via `defineData` and schema models (e.g., `Todo`) with owner-based auth.
+- Data via `defineData` and schema models (e.g., `Trip`) with owner-based auth.
 - No ad‑hoc console changes; changes require pull requests and review.
 <!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
 
@@ -73,7 +73,7 @@ through `Amplify.configure(outputs)` at startup.
 - Framework: React 19, Vite 5, TypeScript 5.
 - AWS Amplify Gen 2 backend with resources declared in `amplify/`:
 	- `auth/resource.ts`: email login with Cognito.
-	- `data/resource.ts`: `Todo` model with owner authorization, default
+	- `data/resource.ts`: `Trip` model with owner authorization, default
 		authorization mode `userPool`, optional API key mode for public rules.
 - UI: `@aws-amplify/ui-react` Authenticator provides sign-in and session.
 - Build: `tsc && vite build`; output directory `dist/`.

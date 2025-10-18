@@ -28,16 +28,11 @@ Date: 2025-10-16
 - description? (optional)
 - visitedAt? (optional)
 
-### Badge
-- id
-- tripId (FK Trip)
-- type (completion)
-- awardedAt
 
 ## Relationships
 - User 1—N Trip
 - Trip 1—N Place
-- Trip 1—1 Badge (for completion)
+<!-- Badge entity removed from MVP -->
 
 ## Validation Rules
 - Trip.name: required, length 1–100
@@ -47,4 +42,4 @@ Date: 2025-10-16
 
 ## Derived State
 - Trip.progress = visitedPlaces / totalPlaces
-- Badge awarded when Trip.progress == 1.0
+<!-- Badge awarding removed from MVP -->

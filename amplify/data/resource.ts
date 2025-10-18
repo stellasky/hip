@@ -6,6 +6,7 @@ const schema = a.schema({
     .model({
       name: a.string().required(),
       // Optionally denormalized counters can be added later (e.g., placesCount)
+      places: a.hasMany("Place", "tripId"),
     })
     .authorization((allow) => [allow.owner()]),
 
@@ -14,6 +15,7 @@ const schema = a.schema({
       tripId: a.id().required(),
       trip: a.belongsTo("Trip", "tripId"),
       name: a.string().required(),
+      description: a.string().required(),
       address: a.string().required(),
       lat: a.float(),
       lng: a.float(),
@@ -21,14 +23,7 @@ const schema = a.schema({
     })
     .authorization((allow) => [allow.owner()]),
 
-  Badge: a
-    .model({
-      tripId: a.id().required(),
-      trip: a.belongsTo("Trip", "tripId"),
-      type: a.string().required(),
-      awardedAt: a.datetime(),
-    })
-    .authorization((allow) => [allow.owner()]),
+  
 });
 
 export type Schema = ClientSchema<typeof schema>;
@@ -46,6 +41,7 @@ export const data = defineData({
 });
 
 /*
+Adding to commment
 Client usage example:
 "use client"
 import { generateClient } from "aws-amplify/data";

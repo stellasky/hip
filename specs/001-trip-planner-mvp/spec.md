@@ -3,7 +3,7 @@
 **Feature Branch**: `001-trip-planner-mvp`  
 **Created**: 2025-10-16  
 **Status**: Draft  
-**Input**: User description: "Trip Planner mobile web app: login; trips list; create trip from addresses; view trip with map and places; mark place visited; award badge when all places visited; place details page."
+**Input**: User description: "Trip Planner mobile web app: login; trips list; create trip from addresses; view trip with map and places; mark place visited; place details page."
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -84,18 +84,7 @@ As a user, I can view place details and mark it visited/unvisited.
 
 ---
 
-### User Story 6 - Completion badge (Priority: P3)
-
-As a user, I receive a badge when all places in a trip are visited.
-
-**Why this priority**: Motivational feedback and clear completion signal.
-
-**Independent Test**: Mark last unvisited place as visited; verify badge display on Trip and Trips pages.
-
-**Acceptance Scenarios**:
-
-1. When the last unvisited place is marked visited, I see a completion badge for that trip.
-2. The badge persists and is visible on the Trips list and Trip Details pages.
+<!-- Removed: Completion badge scope (de-scoped from MVP) -->
 
 ### Edge Cases
 
@@ -103,7 +92,7 @@ As a user, I receive a badge when all places in a trip are visited.
 - No places in trip: show empty state guidance to add places.
 - Duplicate addresses: warn and allow dedupe or proceed.
 - Partial geocoding failure: create trip with valid places; list failed entries for retry.
-- All places already visited: badge remains; unmarking a place removes badge until re-completed.
+<!-- Removed badge-related edge case -->
 
 ## Requirements *(mandatory)*
 
@@ -117,7 +106,7 @@ As a user, I receive a badge when all places in a trip are visited.
 - FR-006 Trip Details: The system MUST display a map of places and a synchronized list.
 - FR-007 Place Details: The system MUST display place name/address and visited state.
 - FR-008 Visited Toggle: The system MUST allow marking a place as visited/unvisited and update progress.
-- FR-009 Completion Logic: The system MUST award a trip badge when all places are visited.
+<!-- Removed FR-009 Completion Logic (badge) -->
 - FR-010 Data Ownership: Users MUST only access their own trips and places.
 
 ### Key Entities *(include if feature involves data)*
@@ -125,7 +114,7 @@ As a user, I receive a badge when all places in a trip are visited.
 - User: id, email, name, createdAt
 - Trip: id, userId (owner), name, createdAt, updatedAt
 - Place: id, tripId, name, address, lat, lng, visited (bool), description?, visitedAt?
-- Badge: id, tripId, type (completion), awardedAt
+<!-- Badge entity removed from MVP -->
 
 ## Success Criteria *(mandatory)*
 

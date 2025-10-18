@@ -16,5 +16,4 @@ This guide walks through the feature flows defined in the spec.
 4) Place Details and visited toggle
 - Toggle visited; verify progress updates; return to trip shows updated status.
 
-5) Completion badge
-- When all places are visited, badge appears in Trip and Trips views.
+<!-- Badge flow removed from MVP -->
