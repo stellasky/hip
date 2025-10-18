@@ -5,7 +5,7 @@ Note: Technology-agnostic shapes. Fields are minimal for MVP; IDs are opaque str
 ## Types
 - Trip: { id, name, placesCount, visitedCount, updatedAt }
 - Place: { id, tripId, name, address, lat, lng, visited }
-- Badge: { id, tripId, type, awardedAt }
+<!-- Badge type removed from MVP -->
 
 ## Trips
 - List trips
@@ -34,7 +34,4 @@ Note: Technology-agnostic shapes. Fields are minimal for MVP; IDs are opaque str
 	- Request: { id: string, visited: boolean }
 	- Response: { place: Place, trip: Trip }
 
-## Badges
-- Get trip badge
-	- Request: { tripId: string }
-	- Response: { badge?: Badge }
+<!-- Badge contracts removed from MVP -->
