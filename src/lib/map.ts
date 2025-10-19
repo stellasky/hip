@@ -6,7 +6,7 @@ export async function loadMapLibre() {
 }
 
 // Thin wrapper for rendering a map with places
-export async function renderMap(container: HTMLElement, mapName: string, places: Array<{ lat: number; lng: number; name: string }>) {
+export async function renderMap(container: HTMLElement, mapName: string, places: Array<{ lat: number; lng: number; name: string; id: string }>, onMarkerClick?: (id: string) => void) {
   const maplibre = await loadMapLibre();
   const map = new maplibre.Map({
     container,
@@ -17,10 +17,13 @@ export async function renderMap(container: HTMLElement, mapName: string, places:
 
   // Add markers for places
   places.forEach(place => {
-    new maplibre.Marker()
+    const marker = new maplibre.Marker()
       .setLngLat([place.lng, place.lat])
       .setPopup(new maplibre.Popup().setHTML(`<h3>${place.name}</h3>`))
       .addTo(map);
+    if (onMarkerClick) {
+      marker.getElement().addEventListener('click', () => onMarkerClick(place.id));
+    }
   });
 
   return map;
