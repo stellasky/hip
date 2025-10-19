@@ -4,6 +4,7 @@ import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { geocodeText } from "./lib/geocode";
+import { isDuplicate, mergePlaces, type PlaceLike } from "./lib/dedupe";
 import outputs from "../amplify_outputs.json";
 
 const client = generateClient<Schema>();
@@ -13,6 +14,7 @@ function App() {
   const { user,signOut } = useAuthenticator();
   const [selectedTripId, setSelectedTripId] = useState<string | undefined>();
   const [addressInput, setAddressInput] = useState("");
+  const [addressError, setAddressError] = useState<string | undefined>();
   const [places, setPlaces] = useState<Array<Schema["Place"]["type"]>>([]);
   const [allPlaces, setAllPlaces] = useState<Array<Schema["Place"]["type"]>>([]);
   // Add trip summaries with progress
@@ -111,17 +113,70 @@ function App() {
     if (!selectedTripId) return alert("Select a trip first");
     if (!addressInput) return;
     if (!placeIndexName) return alert("Place Index not configured yet");
+    setAddressError(undefined);
+    // Cap enforcement: max 100 places per trip (v1)
+    if (places.length >= 100) {
+      alert("You’ve reached the maximum (100) places for this trip.");
+      return;
+    }
     const geo = await geocodeText(placeIndexName, addressInput);
+    if (!geo) {
+      setAddressError("We couldn’t find that address. Try a nearby landmark or a full street address.");
+      return;
+    }
     const placeModel = (client as any)?.models?.Place;
     if (!placeModel?.create) return;
-    await placeModel.create({
-      tripId: selectedTripId,
-      name: geo?.label ?? addressInput,
+    // Duplicate detection (proximity ≤25m)
+    const candidate: PlaceLike = {
+      name: geo.label ?? addressInput,
       address: addressInput,
-      lat: geo?.lat,
-      lng: geo?.lng,
+      lat: geo.lat,
+      lng: geo.lng,
       visited: false,
-    });
+      createdAt: new Date().toISOString(),
+    };
+    const existingGeocoded = places.filter((p: any) => typeof p.lat === 'number' && typeof p.lng === 'number');
+    const dup = existingGeocoded.find((p: any) => isDuplicate({ lat: p.lat, lng: p.lng } as any, candidate));
+    if (dup) {
+      const doMerge = window.confirm("We found a nearby place that looks like a duplicate. Merge into the existing place? (default = Merge)");
+      if (doMerge) {
+        const merged = mergePlaces({
+          id: dup.id,
+          name: dup.name,
+          address: dup.address,
+          lat: dup.lat as number,
+          lng: dup.lng as number,
+          visited: dup.visited,
+          createdAt: dup.createdAt,
+        }, candidate);
+        if ((client as any)?.models?.Place?.update) {
+          await (client as any).models.Place.update({
+            id: dup.id,
+            name: merged.name ?? dup.name,
+            address: merged.address ?? dup.address,
+            visited: merged.visited,
+          });
+        }
+      } else {
+        await placeModel.create({
+          tripId: selectedTripId,
+          name: candidate.name,
+          address: candidate.address,
+          lat: candidate.lat,
+          lng: candidate.lng,
+          visited: false,
+        });
+      }
+    } else {
+      await placeModel.create({
+        tripId: selectedTripId,
+        name: candidate.name,
+        address: candidate.address,
+        lat: candidate.lat,
+        lng: candidate.lng,
+        visited: false,
+      });
+    }
     setAddressInput("");
   }
 
@@ -171,6 +226,9 @@ function App() {
               />
               <button onClick={addPlace}>Add</button>
             </div>
+            {addressError && (
+              <p role="alert" style={{ color: 'crimson', marginTop: 4 }}>{addressError}</p>
+            )}
             <ul>
               {places.map((p) => (
                 <li key={p.id}>
