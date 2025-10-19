@@ -1,3 +1,8 @@
+/* Map preview sizing: 180px on narrow screens */
+.map-preview { height: 180px; }
+@media (min-width: 640px) {
+  .map-preview { height: 240px; }
+}
 body {
   margin: 0;
   background: linear-gradient(180deg, rgb(117, 81, 194), rgb(255, 255, 255));

@@ -6,13 +6,20 @@ export async function loadMapLibre() {
 }
 
 // Thin wrapper for rendering a map with places
-export async function renderMap(container: HTMLElement, mapName: string, places: Array<{ lat: number; lng: number; name: string }>) {
+export async function renderMap(
+  container: HTMLElement,
+  mapName: string,
+  places: Array<{ lat: number; lng: number; name?: string }>,
+  opts?: { interactive?: boolean }
+) {
   const maplibre = await loadMapLibre();
+  const region = ((import.meta as unknown) as { env?: Record<string, string> }).env?.VITE_AWS_REGION || 'us-east-1';
   const map = new maplibre.Map({
     container,
-    style: `https://maps.geo.${process.env.AWS_REGION || 'us-east-1'}.amazonaws.com/maps/v0/maps/${mapName}/style-descriptor`,
+    style: `https://maps.geo.${region}.amazonaws.com/maps/v0/maps/${mapName}/style-descriptor`,
     center: [places[0]?.lng || 0, places[0]?.lat || 0],
     zoom: 10,
+    interactive: opts?.interactive ?? true,
   });
 
   // Add markers for places

@@ -6,6 +6,7 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 import { geocodeText } from "./lib/geocode";
 import { isDuplicate, mergePlaces, type PlaceLike } from "./lib/dedupe";
 import outputs from "../amplify_outputs.json";
+import MapPreview from "./components/MapPreview";
 
 const client = generateClient<Schema>();
 
@@ -22,6 +23,7 @@ function App() {
   // Prefer outputs.location.place_index_name; fallback matches backend naming `${stackName}-place-index` if needed
   const placeIndexName = useMemo(() => (outputs as any)?.location?.place_index_name ?? "HipPlaceIndex", []);
   const [runtimeWarning, setRuntimeWarning] = useState<string | undefined>();
+  const mapName = useMemo(() => (outputs as any)?.location?.map_name ?? "HipMap", []);
 
 
   useEffect(() => {
@@ -217,6 +219,18 @@ function App() {
         <>
           <section>
             <h2>Places</h2>
+            {/* Non-interactive map preview: 180px mobile, 240px on wide screens */}
+            <div style={{ width: '100%', marginBlockEnd: 8 }}>
+              <div style={{ width: '100%', height: '240px' }} className="map-preview-desktop">
+                <MapPreview
+                  mapName={mapName}
+                  markers={places
+                    .filter((p: any) => typeof p.lat === 'number' && typeof p.lng === 'number')
+                    .slice(0, 50)
+                    .map((p: any) => ({ lat: p.lat as number, lng: p.lng as number, name: p.name }))}
+                />
+              </div>
+            </div>
             <div style={{ display: 'flex', gap: 8 }}>
               <input
                 type="text"
