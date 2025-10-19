@@ -43,9 +43,9 @@ description: "Task list for Trip Planner MVP"
 
 ## Phase 3: User Story 1 - Login (P1) 🎯 MVP
 
-- [X] T020 [US1] Ensure login screen and redirect to Trips in src/App.tsx and src/pages/Trips.tsx
-- [X] T021 [US1] Session persistence on refresh (Authenticator) in src/main.tsx
-- [X] T022 [P] [US1] Integration check: tests/integration/login_redirect.spec.ts
+- [ ] T020 [US1] Ensure login screen and redirect to Trips in src/App.tsx and src/pages/Trips.tsx
+- [ ] T021 [US1] Session persistence on refresh (Authenticator) in src/main.tsx
+- [ ] T022 [P] [US1] Integration check: tests/integration/login_redirect.spec.ts
 
 ---
 
@@ -62,13 +62,13 @@ description: "Task list for Trip Planner MVP"
 
 ## Phase 5: User Story 3 - Create Trip & Incremental Address Add (P1)
 
-- [X] T040 [US3] Create Trip form (name + addresses entry)
-- [X] T041 [US3] Validate addresses; show actionable error on invalid
-- [X] T042 [US3] Geocode addresses with AWS Location; create Place records
-- [X] T043 [US3] Persist Trip and derived Places; return to Trips
-- [X] T044 [P] [US3] Edge: partial geocoding failure path (proceed with valid; list failed)
-- [ ] T045 [P] [US3] Integration check: create trip with 3 addresses → places created
-- [X] T046 [US3] Duplicate address handling: detect duplicates and prompt user to dedupe or proceed
+- [ ] T040 [US3] Create Trip (name-only) action in src/pages/Trips.tsx (dialog or inline)
+- [ ] T041 [US3] Trip Details page with address add control at src/pages/TripDetails.tsx
+- [ ] T042 [US3] Validate address input; show actionable error on invalid in src/pages/TripDetails.tsx
+- [ ] T043 [US3] On add, call src/lib/geocode.ts and create Place via src/lib/amplifyClient.ts
+- [ ] T044 [P] [US3] Edge: partial geocoding failure — list failed entries for retry in src/pages/TripDetails.tsx
+- [ ] T045 [P] [US3] Integration check: tests/integration/trip_create_and_add_places.spec.ts
+- [ ] T046 [US3] Duplicate detection (exact/geocoding-equivalent) and merge prompt (default merge) in src/pages/TripDetails.tsx
 
 ---
 

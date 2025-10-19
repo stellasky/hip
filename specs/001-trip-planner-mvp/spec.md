@@ -5,6 +5,16 @@
 **Status**: Draft  
 **Input**: User description: "Trip Planner mobile web app: login; trips list; create trip from addresses; view trip with map and places; mark place visited; place details page."
 
+## Clarifications
+
+### Session 2025-10-18
+
+- Q: How should duplicate addresses within a trip be handled? → A: Warn and offer merge choice (default = merge).
+- Q: What map experience is in scope for MVP? → A: List-first with a small non-interactive map preview on Trip Details; full interactive map deferred.
+- Q: What address entry format and creation flow should MVP support? → A: Single address per add action (incremental) on Trip Details; no bulk entry in MVP.
+- Q: What authentication posture and empty-state behavior should MVP use? → A: Require auth for all features; unauthenticated users see a login gate; empty Trips list shows a “Create your first trip” CTA.
+- Q: How is trip progress calculated? → A: Progress = visited count / total geocoded places (exclude failed/un-geocoded entries from denominator).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Login to access trips (Priority: P1)
@@ -28,43 +38,43 @@ As a user, I can view a list of my trips sorted by last updated with progress.
 
 **Why this priority**: Core home screen enabling navigation and progress.
 
-**Independent Test**: Seed user with trips and verify list order, progress, and empty state.
+**Independent Test**: Seed user with trips and verify list order, progress (visited/geocoded places), and empty state.
 
 **Acceptance Scenarios**:
 
-1. Trips list shows name, place count, and completion progress (% visited).
+1. Trips list shows name, place count, and completion progress (% visited of geocoded places).
 2. Empty state is shown when I have no trips, with a clear CTA to create a trip.
 
 ---
 
-### User Story 3 - Create a trip from addresses (Priority: P1)
+### User Story 3 - Create a trip and add addresses incrementally (Priority: P1)
 
-As a user, I can create a trip by entering addresses that become places.
+As a user, I can create a trip by providing a name, then add addresses one at a time on the Trip Details page; each valid address becomes a place.
 
 **Why this priority**: Enables users to start using the product.
 
-**Independent Test**: Submit a trip with valid and invalid addresses; verify geocoding and error handling.
+**Independent Test**: Create a trip with a name; add one valid and one invalid address via the Trip Details add control; verify the valid address creates a place and the invalid address shows an actionable error.
 
 **Acceptance Scenarios**:
 
-1. I can enter a trip name and one or more addresses.
-2. Addresses are validated/geocoded; invalid entries show an actionable error.
-3. Upon save, the trip appears in my trips list with derived places.
+1. I can enter a trip name and create the trip.
+2. I can add addresses one at a time on Trip Details; each is validated/geocoded; invalid entries show an actionable error.
+3. The trip appears in my trips list; added places reflect successful geocoding events.
 
 ---
 
-### User Story 4 - Trip details with map and list (Priority: P2)
+### User Story 4 - Trip details with map preview and list (Priority: P2)
 
 As a user, I can open a trip to see its places on a map and in a list.
 
 **Why this priority**: Core visualization that supports navigation and status.
 
-**Independent Test**: Open a trip and confirm markers and list are synchronized.
+**Independent Test**: Open a trip and confirm list renders all places; a small non-interactive map preview renders markers (no marker/list syncing in MVP).
 
 **Acceptance Scenarios**:
 
-1. Map shows markers for all places in the trip; the list shows the same places.
-2. Tapping a marker highlights the corresponding list item (and vice versa).
+1. A small non-interactive map preview shows markers for places in the trip; the list shows the same places.
+2. No marker/list sync interaction is required in MVP (deferred).
 3. Visited places are visually distinct from unvisited.
 
 ---
@@ -90,7 +100,7 @@ As a user, I can view place details and mark it visited/unvisited.
 
 - Invalid address entry: show actionable error; block place creation until valid.
 - No places in trip: show empty state guidance to add places.
-- Duplicate addresses: warn and allow dedupe or proceed.
+- Duplicate addresses: warn and offer merge; default merges duplicates into a single place.
 - Partial geocoding failure: create trip with valid places; list failed entries for retry.
 <!-- Removed badge-related edge case -->
 
@@ -100,14 +110,16 @@ As a user, I can view place details and mark it visited/unvisited.
 
 - FR-001 Authentication: The system MUST authenticate users before accessing trips.
 - FR-002 Trips CRUD: The system MUST allow create/read/delete of trips per authenticated user.
-- FR-003 Address Entry: The system MUST accept user-entered addresses when creating a trip.
-- FR-004 Geocoding: The system MUST geocode addresses to coordinates and create place records.
-- FR-005 Trip View: The system MUST display a list of trips with progress (visited/total places).
-- FR-006 Trip Details: The system MUST display a map of places and a synchronized list.
+- FR-003 Address Entry (Incremental): The system MUST accept user-entered addresses one at a time on Trip Details (no bulk import in MVP).
+- FR-004 Geocoding: The system MUST geocode each added address to coordinates and create place records upon success; invalid entries MUST surface actionable errors without creating places.
+- FR-005 Trip View: The system MUST display a list of trips with progress, where progress = visited count / total geocoded places (exclude failed/un-geocoded entries from the denominator).
+- FR-006 Trip Details: The system MUST display a list of places and a small non-interactive map preview on Trip Details; interactive marker/list synchronization is out of scope for MVP.
 - FR-007 Place Details: The system MUST display place name/address and visited state.
 - FR-008 Visited Toggle: The system MUST allow marking a place as visited/unvisited and update progress.
 <!-- Removed FR-009 Completion Logic (badge) -->
 - FR-010 Data Ownership: Users MUST only access their own trips and places.
+- FR-011 Duplicate Handling: When creating or updating a trip from addresses, the system MUST detect duplicate addresses (exact or geocoding-equivalent), warn the user, and offer to merge; the default action MUST merge duplicates into a single place.
+- FR-012 Trip Creation: The system MUST allow creating a trip with only a name; place entry occurs post-creation on Trip Details.
 
 ### Key Entities *(include if feature involves data)*
 

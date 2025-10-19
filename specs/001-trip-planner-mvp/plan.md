@@ -7,7 +7,7 @@
 
 ## Summary
 
-Enable authenticated users to create trips by entering addresses that are geocoded into places; show trips with progress, display trip details on a map and list, allow toggling visited state, and award a completion badge when all places are visited. Implementation will use the existing React + Vite frontend with Amplify Gen 2 backend-as-code (auth + data) per Constitution.
+Enable authenticated users to create trips (name-only at creation), then add addresses incrementally which are geocoded into places; show trips with progress (visited/geocoded), display Trip Details with a list and a small non‑interactive map preview, and allow toggling visited state. Duplicate addresses are detected and users are warned with a default merge behavior. Implementation uses React + Vite with Amplify Gen 2 backend‑as‑code (auth + data) per Constitution.
 
 ## Technical Context
 
@@ -28,6 +28,13 @@ Enable authenticated users to create trips by entering addresses that are geocod
 **Scale/Scope**: MVP: 1 user role, up to 100 places per trip (v1)
 
 **Integrations**: Maps + Geocoding via AWS Location Service (Maps/Places). Resources will be added via Amplify backend-as-code; client uses AWS SDK with Cognito auth. No secrets embedded in code.
+
+**MVP Clarifications reflected here**:
+- Address entry: incremental (single address per add) on Trip Details (no bulk in MVP)
+- Map: list-first with a small non‑interactive preview (no marker/list sync in MVP)
+- Progress: visited count / total geocoded places
+- Duplicates: warn and offer merge (default = merge)
+- Auth: required for all features; unauthenticated users see login gate; empty trips shows CTA
 
 ## Constitution Check
 
