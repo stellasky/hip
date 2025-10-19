@@ -47,7 +47,7 @@ The following MUST be true for this feature (see Hip Constitution):
 - Data access is via Amplify Data client (`generateClient<Schema>()`), including live updates via `observeQuery` when needed.
 - Build contract preserved: `npm run build` executes `tsc && vite build`, emits to `dist/` and aligns with `amplify.yml`.
 - Authenticator wraps protected UI; default authorization mode is `userPool` with owner rules enforced on protected models.
-- Lint/types: ESLint zero warnings; `tsc` zero errors.
+- Lint/types: ESLint zero warnings; `tsc` zero errors. CI MUST fail on any ESLint warning.
 
 Gate Evaluation: PASS (aligned with current repo and constitution). Testing layout chosen; max places set to 100; provider set to AWS Location Service via backend-as-code.
 
@@ -121,4 +121,16 @@ ios/ or android/
 | [e.g., Repository pattern] | [specific problem] | [why direct DB access insufficient] |
 
 No violations anticipated. If geocoding requires additional service, prefer client-side integration; avoid adding a new backend service outside Amplify.
+
+
+## Constraints & UX Specifics
+
+- Duplicate-equivalence: same geocoded place/feature identifier OR ≤25m between coordinates (WGS84). Default action = merge; user can cancel.
+- Merge rules: retain earliest createdAt; visited = visitedA OR visitedB; keep most complete display name/address.
+- Map preview: Non-interactive. Mobile (<640px) height 180px; ≥640px height 240px; width 100%; render up to 50 markers; no pan/zoom controls.
+
+## Governance & CI
+
+- CI gates: `tsc` zero errors; ESLint zero warnings; Vite build succeeds; artifacts in `dist/`.
+- PRs affecting `amplify/` include a brief migration note and an integration verification note.
 

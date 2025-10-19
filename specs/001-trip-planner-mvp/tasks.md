@@ -22,13 +22,13 @@ description: "Task list for Trip Planner MVP"
 - [X] T002 [P] Create top-level test directories: `tests/unit/`, `tests/integration/`
 - [X] T003 [P] Establish testing presets and basic runners (documented; minimal scaffolding)
 - [X] T004 Constitution Check: confirm lint/types/build gates are green
-- [X] T004a [P] Build verification: `npm run build` produces `dist/` with no `tsc` errors and ESLint warnings (document CI gate)
+- [X] T004a [P] Build & lint verification: run `tsc`, `vite build`, and `eslint` with zero warnings; `npm run build` produces `dist/` (document CI gate)
 
 ---
 
 ## Phase 2: Foundational (Blocking Prerequisites)
 
-- [X] T010 Define Data models: Trip, Place, Badge in `amplify/data/resource.ts` (owner auth rules)
+- [X] T010 Define Data models: Trip, Place in `amplify/data/resource.ts` (owner auth rules)
 - [X] T011 [P] Generate Amplify Data client types in frontend and validate imports
 - [X] T012 Add AWS Location Service resources via backend-as-code (maps/places) in `amplify/`
 - [X] T013 [P] Client utility: lazy-load map SDK and thin wrapper for map rendering
@@ -64,18 +64,20 @@ description: "Task list for Trip Planner MVP"
 
 - [ ] T040 [US3] Create Trip (name-only) action in src/pages/Trips.tsx (dialog or inline)
 - [ ] T041 [US3] Trip Details page with address add control at src/pages/TripDetails.tsx
-- [ ] T042 [US3] Validate address input; show actionable error on invalid in src/pages/TripDetails.tsx
+- [ ] T042 [US3] Validate address input; show inline actionable error on invalid with copy ("We couldn’t find that address. Try a nearby landmark or a full street address."), provide a Retry affordance; do not create Place on failure in src/pages/TripDetails.tsx
 - [ ] T043 [US3] On add, call src/lib/geocode.ts and create Place via src/lib/amplifyClient.ts
 - [ ] T044 [P] [US3] Edge: partial geocoding failure — list failed entries for retry in src/pages/TripDetails.tsx
 - [ ] T045 [P] [US3] Integration check: tests/integration/trip_create_and_add_places.spec.ts
 - [ ] T046 [US3] Duplicate detection (exact/geocoding-equivalent) and merge prompt (default merge) in src/pages/TripDetails.tsx
+ - [ ] T046a [P] [US3] Implement duplicate-equivalence in `src/lib/dedupe.ts` (same placeId OR ≤25m); add unit tests `tests/unit/dedupe.spec.ts`
+ - [ ] T046b [P] [US3] Integration: `tests/integration/dedupe_merge_prompt.spec.ts` (two nearby addresses → merge prompt default = merge)
 
 ---
 
 ## Phase 6: User Story 4 - Trip Details + Map Preview (P2)
 
-- [ ] T050 [US4] Non-interactive map preview component at src/components/MapPreview.tsx (render markers only)
-- [ ] T051 [US4] Render list and preview on src/pages/TripDetails.tsx (no marker/list sync in MVP)
+- [ ] T050 [US4] Non-interactive map preview component at src/components/MapPreview.tsx (render markers only); enforce preview size (mobile 180px, ≥640px 240px), width 100%, max 50 markers, no interactions
+- [ ] T051 [US4] Render list and preview on src/pages/TripDetails.tsx (no marker/list sync in MVP); verify sizing and marker limits
 - [ ] T052 [US4] Distinguish visited/unvisited visually in src/pages/TripDetails.tsx
 - [ ] T053 [P] [US4] Integration check: tests/integration/trip_details_preview_markers.spec.ts
 
@@ -96,11 +98,15 @@ description: "Task list for Trip Planner MVP"
 ## Phase 9: Polish & Cross-Cutting
 
 - [ ] T080 [P] Mobile performance: lazy-load AWS SDKs, verify P75 TTI < 2.0s (doc in docs/perf.md)
-- [ ] T081 [P] Accessibility: labels/contrast for lists and preview (WCAG AA) in UI components
+- [ ] T081 [P] Accessibility: labels/contrast for lists and preview (WCAG AA) in UI components (aligns with spec NFR-002)
 - [ ] T082 [P] Error handling: actionable messages for geocoding/data failures across src/pages/*.tsx
 - [ ] T083 Documentation: update specs/001-trip-planner-mvp/quickstart.md and README.md
 - [ ] T084 [P] Analytics: instrument trip_created, place_geocoded, place_marked_visited in src/lib/analytics.ts (stub)
 - [ ] T085 [P] Performance measurement: Lighthouse Mobile 5x; record in docs/perf.md
+ - [ ] T087 [P] Metrics doc: create `docs/metrics.md` with SC mappings, event dictionary, and example queries
+ - [ ] T088 [P] Instrument events `trip_created`, `place_geocoded`, `place_marked_visited`, `login_success` in `src/lib/analytics.ts` (no-op backend)
+ - [ ] T089 [P] Metrics verification: run queries on local logs or mocked sink; attach screenshots/outputs in `docs/metrics.md`
+ - [ ] T090 [P] Enforce 100 places/trip cap: show clear error when exceeding; add unit test `tests/unit/places_cap.spec.ts`
 - [ ] T086 [P] Contracts detail: update specs/001-trip-planner-mvp/contracts/openapi.md per final UI flows
 
 ---
