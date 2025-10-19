@@ -109,17 +109,19 @@ As a user, I can view place details and mark it visited/unvisited.
 ### Functional Requirements
 
 - FR-001 Authentication: The system MUST authenticate users before accessing trips.
-- FR-002 Trips CRUD: The system MUST allow create/read/delete of trips per authenticated user.
+- FR-002 Trips CRUD: The system MUST allow create/read/delete of trips per authenticated user. Trip creation is name-only; place entry occurs post-creation on Trip Details.
 - FR-003 Address Entry (Incremental): The system MUST accept user-entered addresses one at a time on Trip Details (no bulk import in MVP).
-- FR-004 Geocoding: The system MUST geocode each added address to coordinates and create place records upon success; invalid entries MUST surface actionable errors without creating places.
+- FR-004 Geocoding: The system MUST geocode each added address to coordinates and create place records upon success; invalid entries MUST surface actionable errors without creating places. Invalid Address UX: show inline error copy (e.g., "We couldn’t find that address. Try a nearby landmark or a full street address."), provide a Retry affordance, and retain the input; do not create a Place on failure.
 - FR-005 Trip View: The system MUST display a list of trips with progress, where progress = visited count / total geocoded places (exclude failed/un-geocoded entries from the denominator).
-- FR-006 Trip Details: The system MUST display a list of places and a small non-interactive map preview on Trip Details; interactive marker/list synchronization is out of scope for MVP.
+- FR-006 Trip Details: The system MUST display a list of places and a small non-interactive map preview on Trip Details; interactive marker/list synchronization is out of scope for MVP. Map preview dimensions: mobile (<640px) height 180px; ≥640px height 240px; width 100%; render up to 50 markers; no pan/zoom controls or interactions.
 - FR-007 Place Details: The system MUST display place name/address and visited state.
 - FR-008 Visited Toggle: The system MUST allow marking a place as visited/unvisited and update progress.
 <!-- Removed FR-009 Completion Logic (badge) -->
 - FR-010 Data Ownership: Users MUST only access their own trips and places.
 - FR-011 Duplicate Handling: When creating or updating a trip from addresses, the system MUST detect duplicate addresses (exact or geocoding-equivalent), warn the user, and offer to merge; the default action MUST merge duplicates into a single place.
-- FR-012 Trip Creation: The system MUST allow creating a trip with only a name; place entry occurs post-creation on Trip Details.
+- FR-011a Duplicate Equivalence Rule: Two addresses are considered duplicates if the geocoder returns the same place/feature identifier OR the computed distance between geocoded coordinates is ≤ 25 meters (WGS84). Merge behavior: default action = merge into a single Place; retain earliest createdAt; visited = visitedA OR visitedB; keep most complete display name/address.
+
+<!-- FR-012 merged into FR-002 -->
 
 ### Key Entities *(include if feature involves data)*
 
@@ -127,6 +129,29 @@ As a user, I can view place details and mark it visited/unvisited.
 - Trip: id, userId (owner), name, createdAt, updatedAt
 - Place: id, tripId, name, address, lat, lng, visited (bool), description?, visitedAt?
 <!-- Badge entity removed from MVP -->
+
+Note: description and visitedAt are not displayed in MVP UI; visitedAt may be set when toggled to visited for future use.
+
+### Non-Functional Requirements
+
+- NFR-001 Max places per trip: 100 (v1). Attempts to exceed show: "You’ve reached the maximum (100) places for this trip."
+- NFR-002 Accessibility: UI meets WCAG 2.2 AA for color contrast, focus states, and semantics for lists and the preview map.
+- NFR-003 Performance: Mobile P75 time-to-interactive < 2.0s for Trips and Trip Details, measured via Lighthouse Mobile (5× CPU throttle, 4G profile).
+
+### Measurement & Analytics
+
+Events:
+- trip_created { tripId, placeCountAtCreate }
+- place_geocoded { tripId, success: boolean }
+- place_marked_visited { tripId, visited: boolean }
+- login_success { method }
+
+Success Criteria Mapping:
+- SC-001: 80% of first-time users create a trip (≥1 place) within 3 minutes of login_success (first session). Query window: 14 days.
+- SC-002: 70% of users who create a trip mark ≥1 place visited within 7 days.
+- SC-003: 50% of trips reach “all places visited” within 30 days.
+
+Acceptance: Provide a docs/metrics.md with example queries or dashboard screenshots covering SC-001..003 and SC-004.
 
 ## Success Criteria *(mandatory)*
 
