@@ -46,6 +46,32 @@ function App() {
     return () => sub.unsubscribe();
   }, []);
 
+  // Build trip summaries with progress (visited/geocoded places)
+  useEffect(() => {
+    if (!Array.isArray(trips)) {
+      setTripSummaries([]);
+      return;
+    }
+    const byTrip: Record<string, { placesCount: number; visitedCount: number }> = {};
+    for (const p of allPlaces) {
+      // Exclude un-geocoded (lat/lng falsy) from denominator per spec
+      const isGeocoded = typeof p.lat === 'number' && typeof p.lng === 'number' && !Number.isNaN(p.lat) && !Number.isNaN(p.lng);
+      if (!isGeocoded) continue;
+      const key = (p as any).tripId as string | undefined;
+      if (!key) continue;
+      if (!byTrip[key]) byTrip[key] = { placesCount: 0, visitedCount: 0 };
+      byTrip[key].placesCount += 1;
+      if (p.visited) byTrip[key].visitedCount += 1;
+    }
+    const summaries = trips.map((t: any) => ({
+      id: t.id as string,
+      name: t.name as string,
+      placesCount: byTrip[t.id]?.placesCount ?? 0,
+      visitedCount: byTrip[t.id]?.visitedCount ?? 0,
+    }));
+    setTripSummaries(summaries);
+  }, [trips, allPlaces]);
+
   useEffect(() => {
     if (!selectedTripId) {
       setPlaces([]);
