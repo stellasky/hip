@@ -43,9 +43,9 @@ description: "Task list for Trip Planner MVP"
 
 ## Phase 3: User Story 1 - Login (P1) 🎯 MVP
 
-- [ ] T020 [US1] Ensure login screen route and redirect to Trips page on success
-- [ ] T021 [US1] Session persistence on refresh (verify Authenticator behavior)
-- [ ] T022 [P] [US1] Integration check: sign-in → land on Trips
+- [X] T020 [US1] Ensure login screen and redirect to Trips in src/App.tsx and src/pages/Trips.tsx
+- [X] T021 [US1] Session persistence on refresh (Authenticator) in src/main.tsx
+- [X] T022 [P] [US1] Integration check: tests/integration/login_redirect.spec.ts
 
 ---
 
@@ -60,32 +60,32 @@ description: "Task list for Trip Planner MVP"
 
 ---
 
-## Phase 5: User Story 3 - Create Trip (P1)
+## Phase 5: User Story 3 - Create Trip & Incremental Address Add (P1)
 
-- [ ] T040 [US3] Create Trip form (name + addresses entry)
-- [ ] T041 [US3] Validate addresses; show actionable error on invalid
-- [ ] T042 [US3] Geocode addresses with AWS Location; create Place records
-- [ ] T043 [US3] Persist Trip and derived Places; return to Trips
-- [ ] T044 [P] [US3] Edge: partial geocoding failure path (proceed with valid; list failed)
+- [X] T040 [US3] Create Trip form (name + addresses entry)
+- [X] T041 [US3] Validate addresses; show actionable error on invalid
+- [X] T042 [US3] Geocode addresses with AWS Location; create Place records
+- [X] T043 [US3] Persist Trip and derived Places; return to Trips
+- [X] T044 [P] [US3] Edge: partial geocoding failure path (proceed with valid; list failed)
 - [ ] T045 [P] [US3] Integration check: create trip with 3 addresses → places created
-- [ ] T046 [US3] Duplicate address handling: detect duplicates and prompt user to dedupe or proceed
+- [X] T046 [US3] Duplicate address handling: detect duplicates and prompt user to dedupe or proceed
 
 ---
 
-## Phase 6: User Story 4 - Trip Details + Map (P2)
+## Phase 6: User Story 4 - Trip Details + Map Preview (P2)
 
-- [ ] T050 [US4] Trip Details page: list + map of places
-- [ ] T051 [US4] Sync marker selection with list highlight and vice versa
-- [ ] T052 [US4] Distinguish visited/unvisited visually
-- [ ] T053 [P] [US4] Integration check: markers and list stay in sync
+- [ ] T050 [US4] Non-interactive map preview component at src/components/MapPreview.tsx (render markers only)
+- [ ] T051 [US4] Render list and preview on src/pages/TripDetails.tsx (no marker/list sync in MVP)
+- [ ] T052 [US4] Distinguish visited/unvisited visually in src/pages/TripDetails.tsx
+- [ ] T053 [P] [US4] Integration check: tests/integration/trip_details_preview_markers.spec.ts
 
 ---
 
 ## Phase 7: User Story 5 - Place Details & Toggle (P2)
 
-- [ ] T060 [US5] Place Details page: show name/address/visited state
-- [ ] T061 [US5] Toggle visited/unvisited and persist; update progress
-- [ ] T062 [P] [US5] Integration check: toggle visited updates trip progress
+- [ ] T060 [US5] Place Details page at src/pages/PlaceDetails.tsx: show name/address/visited state
+- [ ] T061 [US5] Toggle visited/unvisited in src/pages/PlaceDetails.tsx and persist via src/lib/amplifyClient.ts; update progress in Trips
+- [ ] T062 [P] [US5] Integration check: tests/integration/place_toggle_updates_progress.spec.ts
 
 ---
 
@@ -95,13 +95,13 @@ description: "Task list for Trip Planner MVP"
 
 ## Phase 9: Polish & Cross-Cutting
 
-- [ ] T080 [P] Mobile performance: lazy-load heavy SDKs, prefetch data, verify P75 TTI < 2.0s (manual check)
-- [ ] T081 [P] Accessibility: labels/contrast for map controls and lists (WCAG AA)
-- [ ] T082 [P] Error handling: geocoding and data failures show actionable messages
-- [ ] T083 Documentation: update quickstart.md and README with any changes
-- [ ] T084 [P] Analytics instrumentation: log `trip_created`, `place_geocoded`, `place_marked_visited`
-- [ ] T085 [P] Performance measurement: run Lighthouse Mobile 5x, record P75 TTI for Trips and Trip Details (doc methodology)
-- [ ] T086 [P] Contracts detail: update `contracts/openapi.md` with minimal fields/response shapes per action
+- [ ] T080 [P] Mobile performance: lazy-load AWS SDKs, verify P75 TTI < 2.0s (doc in docs/perf.md)
+- [ ] T081 [P] Accessibility: labels/contrast for lists and preview (WCAG AA) in UI components
+- [ ] T082 [P] Error handling: actionable messages for geocoding/data failures across src/pages/*.tsx
+- [ ] T083 Documentation: update specs/001-trip-planner-mvp/quickstart.md and README.md
+- [ ] T084 [P] Analytics: instrument trip_created, place_geocoded, place_marked_visited in src/lib/analytics.ts (stub)
+- [ ] T085 [P] Performance measurement: Lighthouse Mobile 5x; record in docs/perf.md
+- [ ] T086 [P] Contracts detail: update specs/001-trip-planner-mvp/contracts/openapi.md per final UI flows
 
 ---
 
