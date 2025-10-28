@@ -16,7 +16,7 @@ function Trips() {
   const [runtimeWarning, setRuntimeWarning] = useState<string | undefined>();
 
   useEffect(() => {
-    const tripModel = (client as any)?.models?.Trip;
+    const tripModel = client.models.Trip;
     if (!tripModel?.observeQuery) {
       setRuntimeWarning(
         "Backend models are not in sync (Trip missing). Deploy the backend so amplify_outputs.json includes Trip/Place, then reload."
@@ -24,17 +24,17 @@ function Trips() {
       return;
     }
     const sub = tripModel.observeQuery().subscribe({
-      next: (data: any) => setTrips([...(data.items ?? [])].sort((a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime())),
+      next: (data: { items: Schema["Trip"]["type"][] }) => setTrips([...(data.items ?? [])].sort((a, b) => new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime())),
     });
     return () => sub.unsubscribe();
   }, []);
 
   // Observe all places for summaries
   useEffect(() => {
-    const placeModel = (client as any)?.models?.Place;
+    const placeModel = client.models.Place;
     if (!placeModel?.observeQuery) return;
     const sub = placeModel.observeQuery().subscribe({
-      next: (data: any) => setAllPlaces([...(data.items ?? [])]),
+      next: (data: { items: Schema["Place"]["type"][] }) => setAllPlaces([...(data.items ?? [])]),
     });
     return () => sub.unsubscribe();
   }, []);
@@ -51,7 +51,7 @@ function Trips() {
   }, [trips, allPlaces]);
 
   function deleteTrip(id: string) {
-    const tripModel = (client as any)?.models?.Trip;
+    const tripModel = client.models.Trip;
     if (!tripModel?.delete) return;
     tripModel.delete({ id });
   }
@@ -59,7 +59,7 @@ function Trips() {
   function createTrip() {
     const name = window.prompt("Trip name");
     if (!name) return;
-    const tripModel = (client as any)?.models?.Trip;
+    const tripModel = client.models.Trip;
     if (!tripModel?.create) return;
     tripModel.create({ name });
   }

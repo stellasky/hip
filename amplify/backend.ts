@@ -61,4 +61,13 @@ if (authRole) {
   );
 }
 
-// Note: expose names to the client by aligning frontend defaults or through future addOutput support.
+
+// Expose Place Index and Map names to the frontend via outputs
+backend.addOutput({
+  id: 'locationPlaceIndexName',
+  value: indexName,
+});
+backend.addOutput({
+  id: 'locationMapName',
+  value: mapName,
+});

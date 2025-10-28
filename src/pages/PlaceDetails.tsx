@@ -5,6 +5,7 @@ import { generateClient } from "aws-amplify/data";
 
 const client = generateClient<Schema>();
 
+
 function PlaceDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -12,16 +13,16 @@ function PlaceDetails() {
 
   useEffect(() => {
     if (!id) return;
-    const placeModel = (client as any)?.models?.Place;
+    const placeModel = client.models.Place;
     if (!placeModel?.get) return;
-    placeModel.get({ id }).then((result: any) => setPlace(result.data));
+    placeModel.get({ id }).then((result: { data: Schema["Place"]["type"] }) => setPlace(result.data));
   }, [id]);
 
   function toggleVisited() {
     if (!place) return;
-    const placeModel = (client as any)?.models?.Place;
+    const placeModel = client.models.Place;
     if (!placeModel?.update) return;
-    placeModel.update({ id: place.id, visited: !place.visited }).then((result: any) => {
+    placeModel.update({ id: place.id, visited: !place.visited }).then((result: { data: Schema["Place"]["type"] }) => {
       setPlace(result.data);
     });
   }
