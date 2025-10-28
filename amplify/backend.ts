@@ -63,5 +63,9 @@ if (authRole) {
 
 
 // Expose Place Index and Map names to the frontend via outputs
-backend.addOutput('locationPlaceIndexName', indexName);
-backend.addOutput('locationMapName', mapName);
+backend.addOutput({
+  custom: {
+    locationPlaceIndexName: indexName,
+    locationMapName: mapName,
+  },
+});
