@@ -15,15 +15,18 @@ function PlaceDetails() {
     if (!id) return;
     const placeModel = client.models.Place;
     if (!placeModel?.get) return;
-    placeModel.get({ id }).then((result: { data: Schema["Place"]["type"] }) => setPlace(result.data));
+    placeModel.get({ id }).then((result) => {
+      // result.data may be null if not found
+      if (result && result.data) setPlace(result.data);
+    });
   }, [id]);
 
   function toggleVisited() {
     if (!place) return;
     const placeModel = client.models.Place;
     if (!placeModel?.update) return;
-    placeModel.update({ id: place.id, visited: !place.visited }).then((result: { data: Schema["Place"]["type"] }) => {
-      setPlace(result.data);
+    placeModel.update({ id: place.id, visited: !place.visited }).then((result) => {
+      if (result && result.data) setPlace(result.data);
     });
   }
 

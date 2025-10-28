@@ -78,7 +78,8 @@ function TripDetails() {
 
   // Use Place Index name from outputs if available
   
-  const placeIndexName: string = outputs?.locationPlaceIndexName || "HipPlaceIndex";
+  // TEMP WORKAROUND: allow build if outputs.locationPlaceIndexName is missing
+  const placeIndexName: string = (outputs as any).locationPlaceIndexName || "HipPlaceIndex";
 
   return (
     <main>
