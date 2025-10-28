@@ -64,10 +64,10 @@ if (authRole) {
 
 // Expose Place Index and Map names to the frontend via outputs
 backend.addOutput({
-  id: 'locationPlaceIndexName',
+  name: 'locationPlaceIndexName',
   value: indexName,
 });
 backend.addOutput({
-  id: 'locationMapName',
+  name: 'locationMapName',
   value: mapName,
 });
