@@ -45,24 +45,35 @@ if (authRole) {
   const placeIndexArn = `arn:aws:geo:${region}:${account}:place-index/${indexName}`;
   const mapArn = `arn:aws:geo:${region}:${account}:map/${mapName}`;
 
+  // Allow geocoding on your place index
   authRole.addToPrincipalPolicy(
     new iam.PolicyStatement({
       effect: iam.Effect.ALLOW,
       actions: [
         'geo:SearchPlaceIndexForText',
-        // Map permissions can be used later when rendering maps
+        'geo:SearchPlaceIndexForSuggestions',
+        'geo:SearchPlaceIndexForPosition',
+      ],
+      resources: [placeIndexArn],
+    })
+  );
+
+  // Allow map rendering for your map
+  authRole.addToPrincipalPolicy(
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      actions: [
         'geo:GetMapStyleDescriptor',
         'geo:GetMapGlyphs',
         'geo:GetMapSprites',
         'geo:GetMapTile',
       ],
-      resources: [placeIndexArn, mapArn],
+      resources: [mapArn],
     })
   );
 }
 
-
-// Expose Place Index and Map names to the frontend via outputs
+// Keep your outputs as-is (Amplify Gen 2 style)
 backend.addOutput({
   custom: {
     locationPlaceIndexName: indexName,

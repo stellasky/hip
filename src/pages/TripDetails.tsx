@@ -76,22 +76,54 @@ function TripDetails() {
     createdAt: p.createdAt,
   }));
 
-  // Use Place Index name from outputs if available
-  
-  // TEMP WORKAROUND: allow build if outputs.locationPlaceIndexName is missing
-  const placeIndexName: string = (outputs as any).locationPlaceIndexName || "HipPlaceIndex";
+  // Read names from backend outputs (Amplify Gen 2 puts them under `custom`)
+  const placeIndexName: string | undefined = (outputs as any)?.custom?.locationPlaceIndexName;
+  const mapName: string | undefined = (outputs as any)?.custom?.locationMapName;
+
+  // Warn if missing so we don’t silently fall back to a non-existent index
+  if (!placeIndexName) {
+    console.warn(
+      "Missing outputs.custom.locationPlaceIndexName in amplify_outputs.json; geocoding will fail until backend outputs are present."
+    );
+  }
+
+  // Replace the map rendering effect to use the provided mapName instead of hardcoding 'HipVectorMap'
+  useEffect(() => {
+    if (places.length > 0 && mapName) {
+      const mapContainer = document.getElementById("map");
+      if (mapContainer) {
+        renderMap(
+          mapContainer,
+          mapName, // use output map name
+          places.map((p) => ({
+            lat: p.lat || 0,
+            lng: p.lng || 0,
+            name: p.name,
+            id: p.id,
+          }))
+        );
+      }
+    }
+  }, [places, mapName]);
 
   return (
     <main>
       <h1>Trip Details</h1>
       <div id="map" style={{ height: '400px', width: '100%' }}></div>
-      <button onClick={() => setAddDialogOpen(true)} style={{ margin: '16px 0' }}>Add Place</button>
+      <button
+        onClick={() => setAddDialogOpen(true)}
+        style={{ margin: '16px 0' }}
+        disabled={!placeIndexName}
+        title={!placeIndexName ? "Place index not yet available; deploy backend and reload." : undefined}
+      >
+        Add Place
+      </button>
       <AddPlaceDialog
         open={addDialogOpen}
         onClose={() => setAddDialogOpen(false)}
         onAdd={handleAddPlace}
         existingPlaces={placeLikes}
-        placeIndexName={placeIndexName}
+        placeIndexName={placeIndexName ?? ""} // dialog relies on a valid index; we gate the button above
         cap={100}
       />
       <ul>
