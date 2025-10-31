@@ -80,10 +80,12 @@ function Trips() {
       ) : (
         <ul>
           {tripSummaries.map((trip) => (
-            <li key={trip.id} onClick={() => navigate(`/trip/${trip.id}`)} style={{ cursor: 'pointer' }}>
+            <li key={trip.id} onClick={() => navigate(`/trip/${trip.id}`)} style={{ cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px' }}>
               <span style={{ marginInline: 8 }}>{trip.name}</span>
-              <span>({trip.visitedCount}/{trip.placesCount})</span>
-              <button onClick={(e) => { e.stopPropagation(); deleteTrip(trip.id); }}>Delete</button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <span>({trip.visitedCount}/{trip.placesCount})</span>
+                <button onClick={(e) => { e.stopPropagation(); deleteTrip(trip.id); }}>Delete</button>
+              </div>
             </li>
           ))}
         </ul>

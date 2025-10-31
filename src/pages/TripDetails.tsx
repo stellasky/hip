@@ -8,6 +8,104 @@ import outputs from "../../amplify_outputs.json";
 
 const client = generateClient<Schema>();
 
+const styles = {
+  container: {
+    padding: '12px',
+    maxWidth: '800px',
+    margin: '0 auto',
+  } as const,
+  title: {
+    fontSize: '24px',
+    marginBottom: '16px',
+    marginTop: '8px',
+  } as const,
+  map: {
+    height: '300px',
+    width: '100%',
+    borderRadius: '8px',
+    marginBottom: '16px',
+    border: '2px solid black',
+    position: 'relative',
+    overflow: 'hidden',
+  } as const,
+  addButton: {
+    width: '100%',
+    padding: '12px',
+    marginBottom: '16px',
+    fontSize: '16px',
+    fontWeight: '600',
+  } as const,
+  list: {
+    padding: '0',
+    margin: '16px 0 0 0',
+    listStyle: 'none',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  } as const,
+  listItem: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '8px',
+    backgroundColor: 'white',
+    padding: '12px',
+    borderRadius: '8px',
+    border: '1px solid #e0e0e0',
+  } as const,
+  placeContent: {
+    flex: 1,
+    cursor: 'pointer',
+    minWidth: 0,
+  } as const,
+  label: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '8px',
+    cursor: 'pointer',
+  } as const,
+  checkbox: {
+    marginTop: '2px',
+    flexShrink: 0,
+    cursor: 'pointer',
+  } as const,
+  placeInfo: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px',
+    minWidth: 0,
+  } as const,
+  placeName: {
+    fontWeight: '600',
+    fontSize: '16px',
+  } as const,
+  placeAddress: {
+    fontSize: '14px',
+    color: '#666',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  } as const,
+  deleteButton: {
+    padding: '6px 10px',
+    fontSize: '18px',
+    minWidth: '40px',
+    height: '40px',
+    flexShrink: 0,
+    borderRadius: '6px',
+    backgroundColor: '#f5f5f5',
+    border: '1px solid #ddd',
+    color: '#d32f2f',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+    transition: 'all 0.2s',
+  } as const,
+  emptyState: {
+    textAlign: 'center',
+    color: '#999',
+    padding: '24px',
+    fontSize: '16px',
+  } as const,
+};
 
 function TripDetails() {
   const { id } = useParams<{ id: string }>();
@@ -107,44 +205,65 @@ function TripDetails() {
             name: p.name,
             id: p.id,
           }))
-        );
+        ).catch(err => console.error("Map rendering failed:", err));
       }
     }
   }, [places, mapName]);
 
   return (
-    <main>
-      <h1>Trip Details</h1>
-      <div id="map" style={{ height: '400px', width: '100%' }}></div>
+    <main style={styles.container}>
+      <h1 style={styles.title}>Trip Details</h1>
+      <div id="map" style={styles.map}></div>
       <button
         onClick={() => setAddDialogOpen(true)}
-        style={{ margin: '16px 0' }}
+        style={styles.addButton}
         disabled={!placeIndexName}
         title={!placeIndexName ? "Place index not yet available; deploy backend and reload." : undefined}
       >
-        Add Place
+        + Add Place
       </button>
       <AddPlaceDialog
         open={addDialogOpen}
         onClose={() => setAddDialogOpen(false)}
         onAdd={handleAddPlace}
         existingPlaces={placeLikes}
-        placeIndexName={placeIndexName ?? ""} // dialog relies on a valid index; we gate the button above
+        placeIndexName={placeIndexName ?? ""}
         cap={100}
       />
-      <ul>
-        {places.map((p) => (
-          <li key={p.id} onClick={() => navigate(`/place/${p.id}`)} style={{ cursor: 'pointer' }}>
-            <label>
-              <input type="checkbox" checked={!!p.visited} onChange={(e) => { e.stopPropagation(); toggleVisited(p); }} />
-              {p.name} — {p.address}
-            </label>
-            <button onClick={(e) => { e.stopPropagation(); deletePlace(p); }}>Delete</button>
-          </li>
-        ))}
-      </ul>
+      {places.length === 0 ? (
+        <p style={styles.emptyState}>No places yet. Add your first place to get started!</p>
+      ) : (
+        <ul style={styles.list}>
+          {places.map((p) => (
+            <li key={p.id} style={styles.listItem}>
+              <div style={styles.placeContent} onClick={() => navigate(`/place/${p.id}`)}>
+                <label style={styles.label}>
+                  <input
+                    type="checkbox"
+                    checked={!!p.visited}
+                    onChange={(e) => { e.stopPropagation(); toggleVisited(p); }}
+                    style={styles.checkbox}
+                  />
+                  <span style={styles.placeInfo}>
+                    <span style={styles.placeName}>{p.name}</span>
+                    <span style={styles.placeAddress}>{p.address}</span>
+                  </span>
+                </label>
+              </div>
+              <button
+                onClick={(e) => { e.stopPropagation(); deletePlace(p); }}
+                style={styles.deleteButton}
+                title="Delete place"
+              >
+                ×
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   );
+
 }
 
 export default TripDetails;
