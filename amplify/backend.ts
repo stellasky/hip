@@ -1,9 +1,9 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
-import { CfnMap, CfnPlaceIndex } from 'aws-cdk-lib/aws-location';
-import * as iam from 'aws-cdk-lib/aws-iam';
-import { Stack } from 'aws-cdk-lib';
+import { defineLocation } from './location/resource';
+import { MAP_NAME, PLACE_INDEX_NAME } from './location/constants';
+import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
 // Define Amplify backend resources
 const backend = defineBackend({
@@ -14,61 +14,39 @@ const backend = defineBackend({
 // Custom stack for AWS Location Service (Place Index + Map)
 const locationStack = backend.createStack('location');
 
-// Derive unique names per Amplify env to avoid name collisions in the AWS account/region
-const stackName = Stack.of(locationStack).stackName;
-const indexName = `${stackName}-index`.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 100);
-// Sanitize and shorten mapName for AWS Location
-const mapName = `${stackName}-map`.toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 50);
+// Define Location resources in the stack
+defineLocation(locationStack);
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const placeIndex = new CfnPlaceIndex(locationStack, 'HipPlaceIndex', {
-  dataSource: 'Esri',
-  indexName,
-  dataSourceConfiguration: { intendedUse: 'SingleUse' },
-});
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const vectorMap = new CfnMap(locationStack, 'HipVectorMap', {
-  mapName,
-  configuration: { style: 'VectorEsriStreets' },
-});
-
-// Attach IAM permissions for authenticated users to use the Place Index (and map, when needed)
-// Best practice per constitution: gate Location usage behind authenticated users
-// Attempt to access the authenticated role from the realized auth resource
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const authRole: iam.IRole | undefined = (backend as any)?.resources?.auth?.authenticatedUserIamRole;
-
+// Attach IAM permissions for authenticated users to use the Place Index and Map
+const authRole = (backend.auth as any).resources.authenticatedUserIamRole;
 if (authRole) {
-  const region = Stack.of(locationStack).region;
-  const account = Stack.of(locationStack).account;
-  const placeIndexArn = `arn:aws:geo:${region}:${account}:place-index/${indexName}`;
-  const mapArn = `arn:aws:geo:${region}:${account}:map/${mapName}`;
+  const region = locationStack.region;
+  const account = locationStack.account;
 
-  // Allow geocoding on your place index
+  // Attach Place Index permissions
   authRole.addToPrincipalPolicy(
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
+    new PolicyStatement({
+      effect: Effect.ALLOW,
       actions: [
         'geo:SearchPlaceIndexForText',
         'geo:SearchPlaceIndexForSuggestions',
         'geo:SearchPlaceIndexForPosition',
       ],
-      resources: [placeIndexArn],
+      resources: [`arn:aws:geo:${region}:${account}:place-index/*`], // Wildcard for dev; tighten to specific name later
     })
   );
 
-  // Allow map rendering for your map
+  // Attach Map permissions
   authRole.addToPrincipalPolicy(
-    new iam.PolicyStatement({
-      effect: iam.Effect.ALLOW,
+    new PolicyStatement({
+      effect: Effect.ALLOW,
       actions: [
         'geo:GetMapStyleDescriptor',
         'geo:GetMapGlyphs',
         'geo:GetMapSprites',
         'geo:GetMapTile',
       ],
-      resources: [mapArn],
+      resources: [`arn:aws:geo:${region}:${account}:map/*`], // Wildcard for dev; tighten to specific name later
     })
   );
 }
@@ -76,7 +54,7 @@ if (authRole) {
 // Keep your outputs as-is (Amplify Gen 2 style)
 backend.addOutput({
   custom: {
-    locationPlaceIndexName: indexName,
-    locationMapName: mapName,
+    locationPlaceIndexName: PLACE_INDEX_NAME,
+    locationMapName: MAP_NAME,
   },
 });
