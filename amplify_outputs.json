@@ -1,9 +1,9 @@
 {
   "auth": {
-    "user_pool_id": "us-east-1_Tkxm0izzv",
+    "user_pool_id": "us-east-1_Lhep0EFTH",
     "aws_region": "us-east-1",
-    "user_pool_client_id": "2a043b82vepav50g7kubqjj8t5",
-    "identity_pool_id": "us-east-1:7846a33d-384b-4a61-8c40-cd10a0d654c5",
+    "user_pool_client_id": "1hf76a635i06r6abr9k8vf5dug",
+    "identity_pool_id": "us-east-1:12533443-63c4-429c-bb72-2d2f54aa3638",
     "mfa_methods": [],
     "standard_required_attributes": [
       "email"
@@ -25,9 +25,9 @@
     "unauthenticated_identities_enabled": true
   },
   "data": {
-    "url": "https://etpr4uqbsnbfxnv6kjeld62q24.appsync-api.us-east-1.amazonaws.com/graphql",
+    "url": "https://3pzuazfkoncmzlmibgncmcioru.appsync-api.us-east-1.amazonaws.com/graphql",
     "aws_region": "us-east-1",
-    "api_key": "da2-pwzp3kjlvve3pikll7vmrnnkja",
+    "api_key": "da2-rceeaxi2szfsfh3kqjinrobyce",
     "default_authorization_type": "AMAZON_COGNITO_USER_POOLS",
     "authorization_types": [
       "API_KEY",
@@ -248,9 +248,9 @@
       "nonModels": {}
     }
   },
-  "version": "1.2",
+  "version": "1.3",
   "custom": {
-    "locationPlaceIndexName": "hip-dev-place-index",
-    "locationMapName": "hip-dev-map"
+    "locationPlaceIndexName": "tokentoken1351-place-index",
+    "locationMapName": "tokentoken1351-map"
   }
 }
