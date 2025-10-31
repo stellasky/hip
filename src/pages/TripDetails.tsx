@@ -29,23 +29,29 @@ function TripDetails() {
     return () => sub.unsubscribe();
   }, [id]);
 
-  useEffect(() => {
-    if (places.length > 0) {
-      const mapContainer = document.getElementById('map');
-      if (mapContainer) {
-        renderMap(
-          mapContainer,
-          'HipVectorMap',
-          places.map(p => ({ lat: p.lat || 0, lng: p.lng || 0, name: p.name, id: p.id }))
-        );
-      }
-    }
-  }, [places]);
+  // useEffect(() => {
+  //   if (places.length > 0) {
+  //     const mapContainer = document.getElementById('map');
+  //     if (mapContainer) {
+  //       renderMap(
+  //         mapContainer,
+  //         'HipVectorMap',
+  //         places.map(p => ({ lat: p.lat || 0, lng: p.lng || 0, name: p.name, id: p.id }))
+  //       );
+  //     }
+  //   }
+  // }, [places]);
 
   function toggleVisited(place: Schema["Place"]["type"]) {
     const placeModel = client.models.Place;
     if (!placeModel?.update) return;
     placeModel.update({ id: place.id, visited: !place.visited });
+  }
+
+  function deletePlace(place: Schema["Place"]["type"]) {
+    const placeModel = client.models.Place;
+    if (!placeModel?.delete) return;
+    placeModel.delete({ id: place.id });
   }
 
   // Accept PlaceLike from dialog, map to Place model for backend
@@ -130,9 +136,10 @@ function TripDetails() {
         {places.map((p) => (
           <li key={p.id} onClick={() => navigate(`/place/${p.id}`)} style={{ cursor: 'pointer' }}>
             <label>
-              <input type="checkbox" checked={!!p.visited} onChange={() => toggleVisited(p)} />
+              <input type="checkbox" checked={!!p.visited} onChange={(e) => { e.stopPropagation(); toggleVisited(p); }} />
               {p.name} — {p.address}
             </label>
+            <button onClick={(e) => { e.stopPropagation(); deletePlace(p); }}>Delete</button>
           </li>
         ))}
       </ul>
